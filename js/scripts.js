@@ -1,8 +1,5 @@
 window.addEventListener("DOMContentLoaded", () => {
-
-    // =========================
-    // REFERENCIAS DEL HTML
-    // =========================
+ 
     const questionContainer = document.getElementById("question-container");
     const btnAnterior       = document.getElementById("btnAnterior");
     const btnSiguiente      = document.getElementById("btnSiguiente");
@@ -10,16 +7,10 @@ window.addEventListener("DOMContentLoaded", () => {
     const barraProgreso     = document.getElementById("barraProgreso");
     const categoriaActual   = document.getElementById("categoriaActual");
     const resultadoFinal    = document.getElementById("resultado-final");
-
-    // =========================
-    // VARIABLES DE CONTROL
-    // =========================
+ 
     let indiceActual = 0;
     let respuestas   = [];
-
-    // =========================
-    // CONFIGURACIÓN DE CATEGORÍAS
-    // =========================
+ 
     const categoriasMatriz = [
         { numero: 1, nombrePantalla: "Aprendizaje y conocimiento",          nombreMatriz: "Categoría 1. Aprendizaje y conocimiento",          inicio: 1,  fin: 5  },
         { numero: 2, nombrePantalla: "Comunicación, lenguaje y pensamiento", nombreMatriz: "Categoría 2. Comunicación, lenguaje y pensamiento", inicio: 6,  fin: 10 },
@@ -27,236 +18,293 @@ window.addEventListener("DOMContentLoaded", () => {
         { numero: 4, nombrePantalla: "Participación social",                 nombreMatriz: "Categoría 4. Participación social",                inicio: 16, fin: 20 },
         { numero: 5, nombrePantalla: "Movilidad",                            nombreMatriz: "Categoría 5. Movilidad",                          inicio: 21, fin: 25 }
     ];
-
+ 
     // =========================
     // FUNCIONES AUXILIARES
     // =========================
-    function obtenerCategoriaPorId(idPregunta) {
-        return categoriasMatriz.find(cat => idPregunta >= cat.inicio && idPregunta <= cat.fin) || null;
+    function obtenerCategoriaPorId(id) {
+        return categoriasMatriz.find(c => id >= c.inicio && id <= c.fin) || null;
     }
-
-    function obtenerCategoria(preguntaActual) {
-        const cat = obtenerCategoriaPorId(preguntaActual.id);
-        return cat ? cat.nombrePantalla : (preguntaActual.categoria || "Sin categoría").trim();
+    function obtenerCategoria(p) {
+        const c = obtenerCategoriaPorId(p.id);
+        return c ? c.nombrePantalla : (p.categoria || "Sin categoría").trim();
     }
-
-    function obtenerPregunta(preguntaActual) {
-        return preguntaActual.pregunta || "Pregunta no disponible";
+    function obtenerPregunta(p)     { return p.pregunta || "Pregunta no disponible"; }
+    function obtenerOrientadoras(p) { return Array.isArray(p.orientadoras) ? p.orientadoras : []; }
+    function formatearFecha(f) {
+        if (!f) return "";
+        const p = f.split("-");
+        return p.length === 3 ? `${p[2]}/${p[1]}/${p[0]}` : f;
     }
-
-    function obtenerOrientadoras(preguntaActual) {
-        return Array.isArray(preguntaActual.orientadoras) ? preguntaActual.orientadoras : [];
-    }
-
-    function formatearFecha(fechaInput) {
-        if (!fechaInput) return "";
-        const partes = fechaInput.split("-");
-        if (partes.length !== 3) return fechaInput;
-        return `${partes[2]}/${partes[1]}/${partes[0]}`;
-    }
-
     function generarCeldasPreguntas() {
-        const celdas = {};
+        const c = {};
         for (let i = 1; i <= 25; i++) {
-            const respuesta = respuestas.find(r => r.idPregunta === i);
-            const valor = respuesta?.valor;
-            celdas[`p${i}c0`] = valor === 0 ? "0" : "";
-            celdas[`p${i}c1`] = valor === 1 ? "1" : "";
-            celdas[`p${i}c2`] = valor === 2 ? "2" : "";
-            celdas[`p${i}c3`] = valor === 3 ? "3" : "";
+            const r = respuestas.find(r => r.idPregunta === i);
+            const v = r?.valor;
+            c[`p${i}c0`] = v === 0 ? "0" : "";
+            c[`p${i}c1`] = v === 1 ? "1" : "";
+            c[`p${i}c2`] = v === 2 ? "2" : "";
+            c[`p${i}c3`] = v === 3 ? "3" : "";
         }
-        return celdas;
+        return c;
     }
-
+ 
     // =========================
-    // ACTUALIZAR NOMBRE EN NAVBAR
-    // =========================
-    function actualizarNombreNavbar() {
-        const nombreNavbar = document.getElementById("navbar-nombre-pcd");
-        const nombre = document.getElementById("nombre")?.value || "";
-        if (nombreNavbar) {
-            nombreNavbar.textContent = nombre ? `Evaluando: ${nombre}` : "";
-        }
-    }
-
-    // =========================
-    // MOSTRAR / OCULTAR PANTALLAS
+    // PANTALLAS
     // =========================
     function mostrarPantallaInicio() {
-        document.getElementById("pantalla-inicio").style.display  = "block";
+        document.getElementById("pantalla-inicio").style.display     = "block";
         document.getElementById("pantalla-evaluacion").style.display = "none";
         document.getElementById("pantalla-resultado").style.display  = "none";
     }
-
     function mostrarPantallaEvaluacion() {
         document.getElementById("pantalla-inicio").style.display     = "none";
         document.getElementById("pantalla-evaluacion").style.display = "block";
         document.getElementById("pantalla-resultado").style.display  = "none";
-        actualizarNombreNavbar();
+        const nombre = document.getElementById("nombre")?.value || "";
+        const el = document.getElementById("navbar-nombre-pcd");
+        if (el) el.textContent = nombre ? `Evaluando: ${nombre}` : "";
     }
-
     function mostrarPantallaResultado() {
         document.getElementById("pantalla-inicio").style.display     = "none";
         document.getElementById("pantalla-evaluacion").style.display = "none";
         document.getElementById("pantalla-resultado").style.display  = "block";
     }
-
+ 
     // =========================
     // RENDERIZAR PREGUNTA
     // =========================
     function renderizarPregunta() {
-        const preguntaActual        = preguntas[indiceActual];
-        const nombreCategoria       = obtenerCategoria(preguntaActual);
-        const textoPregunta         = obtenerPregunta(preguntaActual);
-        const preguntasOrientadoras = obtenerOrientadoras(preguntaActual);
-
-        // Progreso
+        const p  = preguntas[indiceActual];
+        const nc = obtenerCategoria(p);
+        const tp = obtenerPregunta(p);
+        const or = obtenerOrientadoras(p);
+ 
         textoProgreso.textContent   = `Pregunta ${indiceActual + 1} de ${preguntas.length}`;
-        categoriaActual.textContent = nombreCategoria;
-        const porcentaje = Math.round(((indiceActual + 1) / preguntas.length) * 100);
-        barraProgreso.style.width   = `${porcentaje}%`;
-        barraProgreso.textContent   = `${porcentaje}%`;
-
-        const respuestaGuardada = respuestas.find(r => r.idPregunta === preguntaActual.id);
-
-        // Layout dos columnas
+        categoriaActual.textContent = nc;
+        const pct = Math.round(((indiceActual + 1) / preguntas.length) * 100);
+        barraProgreso.style.width   = `${pct}%`;
+        barraProgreso.textContent   = `${pct}%`;
+ 
+        const rg = respuestas.find(r => r.idPregunta === p.id);
+ 
         questionContainer.innerHTML = `
             <div class="evaluacion-grid">
-
-                <!-- Columna izquierda: pregunta + calificación -->
                 <div class="col-pregunta">
                     <p class="label-seccion">Pregunta</p>
-                    <p class="texto-pregunta">${textoPregunta}</p>
-
-                    <p class="label-seccion" style="margin-top: 1.25rem;">Seleccione la calificación</p>
+                    <p class="texto-pregunta">${tp}</p>
+                    <p class="label-seccion" style="margin-top:1.25rem">Seleccione la calificación</p>
                     <div class="opciones-grid">
-                        ${escalaCalificacion.map(opcion => `
-                            <div class="card opcion-card ${respuestaGuardada && respuestaGuardada.valor === opcion.valor ? 'seleccionada' : ''}"
-                                data-valor="${opcion.valor}">
+                        ${escalaCalificacion.map(op => `
+                            <div class="card opcion-card ${rg && rg.valor === op.valor ? 'seleccionada' : ''}" data-valor="${op.valor}">
                                 <div class="card-body">
-                                    <h6 class="fw-bold">${opcion.titulo}</h6>
-                                    <p class="mb-0">${opcion.descripcion}</p>
+                                    <h6 class="fw-bold">${op.titulo}</h6>
+                                    <p class="mb-0">${op.descripcion}</p>
                                 </div>
                             </div>
                         `).join("")}
                     </div>
                 </div>
-
-                <!-- Columna derecha: preguntas orientadoras -->
                 <div class="col-orientadoras">
                     <p class="label-seccion">Preguntas orientadoras</p>
                     <ul class="lista-orientadoras">
-                        ${preguntasOrientadoras.length > 0
-                            ? preguntasOrientadoras.map(item => `<li>${item}</li>`).join("")
-                            : `<li class="sin-orientadoras">No hay preguntas orientadoras registradas.</li>`
-                        }
+                        ${or.length > 0
+                            ? or.map(i => `<li>${i}</li>`).join("")
+                            : `<li class="sin-orientadoras">No hay preguntas orientadoras registradas.</li>`}
                     </ul>
                 </div>
-
-            </div>
-        `;
-
+            </div>`;
+ 
         activarEventosOpciones();
         actualizarBotones();
     }
-
+ 
     function activarEventosOpciones() {
-        const cards = document.querySelectorAll(".opcion-card");
-        cards.forEach(card => {
+        document.querySelectorAll(".opcion-card").forEach(card => {
             card.addEventListener("click", () => {
-                cards.forEach(c => c.classList.remove("seleccionada"));
+                document.querySelectorAll(".opcion-card").forEach(c => c.classList.remove("seleccionada"));
                 card.classList.add("seleccionada");
             });
         });
     }
-
+ 
     function actualizarBotones() {
         btnAnterior.disabled     = indiceActual === 0;
         btnSiguiente.textContent = indiceActual === preguntas.length - 1 ? "Finalizar" : "Siguiente →";
     }
-
+ 
     function guardarRespuestaActual() {
-        const preguntaActual     = preguntas[indiceActual];
-        const opcionSeleccionada = document.querySelector(".opcion-card.seleccionada");
-
-        if (!opcionSeleccionada) {
-            alert("Debes seleccionar una calificación antes de continuar.");
-            return false;
-        }
-
-        const valor              = Number(opcionSeleccionada.dataset.valor);
-        const respuestaExistente = respuestas.find(r => r.idPregunta === preguntaActual.id);
-        const categoriaCalculada = obtenerCategoria(preguntaActual);
-
-        if (respuestaExistente) {
-            respuestaExistente.valor     = valor;
-            respuestaExistente.pregunta  = obtenerPregunta(preguntaActual);
-            respuestaExistente.categoria = categoriaCalculada;
-        } else {
-            respuestas.push({ idPregunta: preguntaActual.id, categoria: categoriaCalculada, pregunta: obtenerPregunta(preguntaActual), valor });
-        }
+        const p  = preguntas[indiceActual];
+        const op = document.querySelector(".opcion-card.seleccionada");
+        if (!op) { alert("Debes seleccionar una calificación antes de continuar."); return false; }
+        const v   = Number(op.dataset.valor);
+        const ex  = respuestas.find(r => r.idPregunta === p.id);
+        const cat = obtenerCategoria(p);
+        if (ex) { ex.valor = v; ex.pregunta = obtenerPregunta(p); ex.categoria = cat; }
+        else     respuestas.push({ idPregunta: p.id, categoria: cat, pregunta: obtenerPregunta(p), valor: v });
         return true;
     }
-
+ 
     // =========================
     // CÁLCULOS
     // =========================
-    function obtenerTipoApoyoCategoria(porcentaje) {
-        if (porcentaje < 5)                       return { tipo: "NO REQUIERE APOYO",  equivalencia: 0 };
-        if (porcentaje >= 5  && porcentaje <= 24) return { tipo: "APOYO INTERMITENTE", equivalencia: 1 };
-        if (porcentaje >= 25 && porcentaje <= 50) return { tipo: "APOYO LIMITADO",     equivalencia: 2 };
-        if (porcentaje >= 51 && porcentaje <= 84) return { tipo: "APOYO EXTENSO",      equivalencia: 3 };
-        return                                           { tipo: "APOYO GENERALIZADO", equivalencia: 4 };
+    function obtenerTipoApoyoCategoria(pct) {
+        if (pct < 5)                   return { tipo: "NO REQUIERE APOYO",  equivalencia: 0 };
+        if (pct >= 5  && pct <= 24)    return { tipo: "APOYO INTERMITENTE", equivalencia: 1 };
+        if (pct >= 25 && pct <= 50)    return { tipo: "APOYO LIMITADO",     equivalencia: 2 };
+        if (pct >= 51 && pct <= 84)    return { tipo: "APOYO EXTENSO",      equivalencia: 3 };
+        return                                { tipo: "APOYO GENERALIZADO", equivalencia: 4 };
     }
-
-    function obtenerTipoApoyoGeneral(porcentaje) {
-        if (porcentaje < 5)                       return { tipo: "NO REQUIERE APOYO",  equivalencia: 0 };
-        if (porcentaje >= 5  && porcentaje <= 24) return { tipo: "APOYO INTERMITENTE", equivalencia: 1 };
-        if (porcentaje >= 25 && porcentaje <= 49) return { tipo: "APOYO LIMITADO",     equivalencia: 2 };
-        if (porcentaje >= 50 && porcentaje <= 84) return { tipo: "APOYO EXTENSO",      equivalencia: 3 };
-        return                                           { tipo: "APOYO GENERALIZADO", equivalencia: 4 };
+    function obtenerTipoApoyoGeneral(pct) {
+        if (pct < 5)                   return { tipo: "NO REQUIERE APOYO",  equivalencia: 0 };
+        if (pct >= 5  && pct <= 24)    return { tipo: "APOYO INTERMITENTE", equivalencia: 1 };
+        if (pct >= 25 && pct <= 49)    return { tipo: "APOYO LIMITADO",     equivalencia: 2 };
+        if (pct >= 50 && pct <= 84)    return { tipo: "APOYO EXTENSO",      equivalencia: 3 };
+        return                                { tipo: "APOYO GENERALIZADO", equivalencia: 4 };
     }
-
+ 
     function calcularResultadosPorCategoria() {
-        return categoriasMatriz.map(categoriaBase => {
-            const respuestasCategoria = respuestas
-                .filter(r => r.idPregunta >= categoriaBase.inicio && r.idPregunta <= categoriaBase.fin)
-                .sort((a, b) => a.idPregunta - b.idPregunta);
-            const valores       = respuestasCategoria.map(r => r.valor);
-            const suma          = valores.reduce((acc, num) => acc + num, 0);
-            const cantidadCeros = valores.filter(v => v === 0).length;
-            const division      = cantidadCeros >= 2 ? 12 : 15;
-            const porcentaje    = Number(((suma / division) * 100).toFixed(2));
-            const tipoApoyo     = obtenerTipoApoyoCategoria(porcentaje);
+        return categoriasMatriz.map(cb => {
+            const rc  = respuestas.filter(r => r.idPregunta >= cb.inicio && r.idPregunta <= cb.fin).sort((a,b) => a.idPregunta - b.idPregunta);
+            const val = rc.map(r => r.valor);
+            const suma  = val.reduce((a,n) => a+n, 0);
+            const ceros = val.filter(v => v === 0).length;
+            const div   = ceros >= 2 ? 12 : 15;
+            const pct   = Number(((suma / div) * 100).toFixed(2));
+            const ta    = obtenerTipoApoyoCategoria(pct);
             return {
-                categoria: categoriaBase.nombreMatriz,
-                pregunta1: valores[0] ?? "", pregunta2: valores[1] ?? "",
-                pregunta3: valores[2] ?? "", pregunta4: valores[3] ?? "",
-                pregunta5: valores[4] ?? "",
-                suma, cantidadCeros, division, porcentaje,
-                tipoApoyo: tipoApoyo.tipo, equivalencia: tipoApoyo.equivalencia
+                categoria: cb.nombreMatriz, nombrePantalla: cb.nombrePantalla,
+                pregunta1: val[0]??"", pregunta2: val[1]??"", pregunta3: val[2]??"",
+                pregunta4: val[3]??"", pregunta5: val[4]??"",
+                suma, ceros, division: div, porcentaje: pct,
+                tipoApoyo: ta.tipo, equivalencia: ta.equivalencia
             };
         });
     }
-
-    function calcularResultadoGeneral(resultadosCategorias) {
-        const equivalencias        = resultadosCategorias.map(r => r.equivalencia);
-        const sumaGeneral          = equivalencias.reduce((acc, num) => acc + num, 0);
-        const cantidadCerosGeneral = equivalencias.filter(v => v === 0).length;
-        const divisionGeneral      = cantidadCerosGeneral >= 2 ? 16 : 20;
-        const calculoGeneral       = Number((sumaGeneral / divisionGeneral).toFixed(4));
-        const porcentajeGeneral    = Number((calculoGeneral * 100).toFixed(2));
-        const tipoApoyoGeneral     = obtenerTipoApoyoGeneral(porcentajeGeneral);
-        return { sumaGeneral, cantidadCerosGeneral, divisionGeneral, calculoGeneral, porcentajeGeneral, tipoApoyoGeneral: tipoApoyoGeneral.tipo, equivalenciaGeneral: tipoApoyoGeneral.equivalencia };
+ 
+    function calcularResultadoGeneral(rc) {
+        const eq   = rc.map(r => r.equivalencia);
+        const sg   = eq.reduce((a,n) => a+n, 0);
+        const cg   = eq.filter(v => v === 0).length;
+        const dg   = cg >= 2 ? 16 : 20;
+        const calc = Number((sg / dg).toFixed(4));
+        const pct  = Number((calc * 100).toFixed(2));
+        const ta   = obtenerTipoApoyoGeneral(pct);
+        return { sumaGeneral: sg, cantidadCerosGeneral: cg, divisionGeneral: dg,
+                 calculoGeneral: calc, porcentajeGeneral: pct,
+                 tipoApoyoGeneral: ta.tipo, equivalenciaGeneral: ta.equivalencia };
     }
-
+ 
+    // =========================
+    // PANEL DE ANÁLISIS
+    // Críticas:  puntaje 3 (primero) y 2 (después)
+    // Moderadas: puntaje 1
+    // Sin apoyo: puntaje 0
+    // =========================
+    function generarPanelAnalisis(rc, rg) {
+ 
+        // Separar respuestas por puntaje exacto
+        const pregs3 = respuestas.filter(r => r.valor === 3).sort((a,b) => a.idPregunta - b.idPregunta);
+        const pregs2 = respuestas.filter(r => r.valor === 2).sort((a,b) => a.idPregunta - b.idPregunta);
+        const pregs1 = respuestas.filter(r => r.valor === 1).sort((a,b) => a.idPregunta - b.idPregunta);
+        const pregs0 = respuestas.filter(r => r.valor === 0).sort((a,b) => a.idPregunta - b.idPregunta);
+ 
+        // Renderiza una lista de preguntas con su badge de color
+        function renderItems(lista, bgBadge, colorBadge) {
+            return lista.map(r => `
+                <li class="acord-item-preg">
+                    <span class="acord-badge" style="background:${bgBadge};color:${colorBadge}">Puntaje ${r.valor}</span>
+                    <span>${r.pregunta}</span>
+                </li>`).join("");
+        }
+ 
+        // Construye una sección del acordeón
+        function seccion(id, icono, titulo, resumen, colores, htmlItems) {
+            if (!htmlItems) return "";
+            return `
+            <div class="acord-item" style="border-left:4px solid ${colores.borde}">
+                <button class="acord-btn" onclick="toggleAcordeon('${id}')"
+                    style="background:${colores.bg}">
+                    <div class="acord-btn-izq">
+                        <span class="acord-icono">${icono}</span>
+                        <div>
+                            <p class="acord-titulo" style="color:${colores.titulo}">${titulo}</p>
+                            <p class="acord-resumen" style="color:${colores.cats}">${resumen}</p>
+                        </div>
+                    </div>
+                    <span class="acord-flecha" id="flecha-${id}" style="color:${colores.titulo}">▼</span>
+                </button>
+                <div class="acord-contenido" id="contenido-${id}">
+                    <ul class="acord-lista">${htmlItems}</ul>
+                </div>
+            </div>`;
+        }
+ 
+        // Críticas: puntaje 3 primero, luego puntaje 2
+        const htmlCriticas = pregs3.length > 0 || pregs2.length > 0
+            ? renderItems(pregs3, "#FCEBEB", "#A32D2D") + renderItems(pregs2, "#FAEEDA", "#854F0B")
+            : null;
+ 
+        // Moderadas: solo puntaje 1
+        const htmlModeradas = pregs1.length > 0
+            ? renderItems(pregs1, "#FFF8E1", "#7B5A00")
+            : null;
+ 
+        // Sin apoyo: solo puntaje 0
+        const htmlSinApoyo = pregs0.length > 0
+            ? renderItems(pregs0, "#EAF3DE", "#3B6D11")
+            : null;
+ 
+        return `
+        <div class="panel-analisis">
+            <h4 class="panel-titulo">Análisis de resultados</h4>
+            <p class="panel-intro">Resumen automático para apoyar la redacción del concepto técnico.</p>
+ 
+            <div class="acord-grupo">
+                ${seccion("criticas", "🔴", "Áreas críticas",
+                    `${pregs3.length} aspecto(s) con puntaje 3 &nbsp;·&nbsp; ${pregs2.length} aspecto(s) con puntaje 2`,
+                    { bg:"#FCEBEB", borde:"#E24B4A", titulo:"#A32D2D", cats:"#791F1F" },
+                    htmlCriticas)}
+ 
+                ${seccion("moderadas", "🟡", "Áreas moderadas",
+                    `${pregs1.length} aspecto(s) con puntaje 1`,
+                    { bg:"#FAEEDA", borde:"#EF9F27", titulo:"#854F0B", cats:"#633806" },
+                    htmlModeradas)}
+ 
+                ${seccion("sin-apoyo", "🟢", "Sin necesidad de apoyo",
+                    `${pregs0.length} aspecto(s) con puntaje 0`,
+                    { bg:"#EAF3DE", borde:"#639922", titulo:"#3B6D11", cats:"#27500A" },
+                    htmlSinApoyo)}
+            </div>
+ 
+            <div class="panel-general">
+                <div>
+                    <p class="panel-general-label">Resultado general</p>
+                    <p class="panel-general-tipo">${rg.tipoApoyoGeneral} — ${rg.porcentajeGeneral}%</p>
+                </div>
+                <div style="text-align:right">
+                    <p class="panel-general-label">Suma general</p>
+                    <p class="panel-general-num">${rg.sumaGeneral} / ${rg.divisionGeneral}</p>
+                </div>
+            </div>
+        </div>`;
+    }
+ 
+    window.toggleAcordeon = function(id) {
+        const c = document.getElementById(`contenido-${id}`);
+        const f = document.getElementById(`flecha-${id}`);
+        const abierto = c.classList.contains("abierto");
+        c.classList.toggle("abierto", !abierto);
+        f.textContent = abierto ? "▼" : "▲";
+    };
+ 
     // =========================
     // MOSTRAR RESULTADO FINAL
     // =========================
     function mostrarResultadoFinal() {
-        const resultadosCategorias = calcularResultadosPorCategoria();
-        const resultadoGeneral     = calcularResultadoGeneral(resultadosCategorias);
-
+        const rc = calcularResultadosPorCategoria();
+        const rg = calcularResultadoGeneral(rc);
+ 
         let html = `
             <div class="card mb-4">
                 <div class="card-body">
@@ -270,18 +318,18 @@ window.addEventListener("DOMContentLoaded", () => {
                                     <th colspan="5">CÁLCULOS</th>
                                 </tr>
                                 <tr>
-                                    <th rowspan="2">P 1</th><th rowspan="2">P 2</th>
-                                    <th rowspan="2">P 3</th><th rowspan="2">P 4</th>
-                                    <th rowspan="2">P 5</th><th rowspan="2">SUMA</th>
+                                    <th rowspan="2">P1</th><th rowspan="2">P2</th>
+                                    <th rowspan="2">P3</th><th rowspan="2">P4</th>
+                                    <th rowspan="2">P5</th><th rowspan="2">SUMA</th>
                                     <th colspan="2">CÁLCULO</th>
                                     <th rowspan="2">TIPO APOYO</th>
-                                    <th rowspan="2">EQUIV</th>
+                                    <th rowspan="2">EQUIV.</th>
                                 </tr>
-                                <tr><th>DIVISIÓN</th><th>RESULTADO</th></tr>
+                                <tr><th>DIV.</th><th>RESULT.</th></tr>
                             </thead>
                             <tbody>`;
-
-        resultadosCategorias.forEach(r => {
+ 
+        rc.forEach(r => {
             html += `<tr>
                 <td class="text-start">${r.categoria}</td>
                 <td>${r.pregunta1}</td><td>${r.pregunta2}</td><td>${r.pregunta3}</td>
@@ -290,141 +338,154 @@ window.addEventListener("DOMContentLoaded", () => {
                 <td>${r.tipoApoyo}</td><td>${r.equivalencia}</td>
             </tr>`;
         });
-
+ 
         html += `
             <tr><td colspan="9" class="text-start fw-bold">APOYO GENERAL OBTENIDO =</td><td class="fw-bold">CÁLCULO</td><td class="fw-bold">RESULTADO</td></tr>
-            <tr><td colspan="8"></td><td class="fw-bold">SUMA GENERAL</td><td class="fw-bold">DIVISIÓN GENERAL</td><td></td></tr>
-            <tr><td colspan="8"></td><td>${resultadoGeneral.sumaGeneral}</td><td>${resultadoGeneral.divisionGeneral}</td><td></td></tr>
+            <tr><td colspan="8"></td><td class="fw-bold">SUMA GENERAL</td><td class="fw-bold">DIV. GENERAL</td><td></td></tr>
+            <tr><td colspan="8"></td><td>${rg.sumaGeneral}</td><td>${rg.divisionGeneral}</td><td></td></tr>
             <tr><td colspan="8"></td><td class="fw-bold">CÁLCULO</td><td colspan="2" class="fw-bold">RESULTADO</td></tr>
-            <tr><td colspan="8"></td><td>${resultadoGeneral.calculoGeneral}</td><td colspan="2">${resultadoGeneral.porcentajeGeneral}%</td></tr>
-            <tr><td colspan="8"></td><td colspan="3" class="fw-bold">${resultadoGeneral.tipoApoyoGeneral}</td></tr>
+            <tr><td colspan="8"></td><td>${rg.calculoGeneral}</td><td colspan="2">${rg.porcentajeGeneral}%</td></tr>
+            <tr><td colspan="8"></td><td colspan="3" class="fw-bold">${rg.tipoApoyoGeneral}</td></tr>
             </tbody></table></div></div></div>`;
-
+ 
+        html += generarPanelAnalisis(rc, rg);
         resultadoFinal.innerHTML = html;
         mostrarPantallaResultado();
-
-        document.getElementById("card-profesional").style.display      = "block";
-        document.getElementById("contenedor-boton-word").style.display  = "block";
+ 
+        document.getElementById("card-profesional").style.display   = "block";
+        document.getElementById("contenedor-botones").style.display = "flex";
     }
-
+ 
+    // =========================
+    // GUARDAR EVALUACIÓN
+    // =========================
+    document.getElementById("btnGuardar")?.addEventListener("click", () => {
+        const nombreProf = document.getElementById("nombreProfesional").value.trim();
+        const cargo      = document.getElementById("cargoProfesional").value.trim();
+        const concepto   = document.getElementById("conceptoTecnico").value.trim();
+ 
+        if (!nombreProf || !cargo || !concepto) {
+            alert("Por favor completa el nombre del profesional, cargo y concepto técnico antes de guardar.");
+            return;
+        }
+ 
+        const rc = calcularResultadosPorCategoria();
+        const rg = calcularResultadoGeneral(rc);
+ 
+        const evaluacion = {
+            id:        Date.now(),
+            fecha:     document.getElementById("fecha").value,
+            nombre:    document.getElementById("nombre").value,
+            documento: document.getElementById("documento").value,
+            profesional: { nombre: nombreProf, cargo, concepto },
+            respuestas,
+            resultadosPorCategoria: rc,
+            resultadoGeneral: rg,
+            fechaGuardado: new Date().toISOString()
+        };
+ 
+        const lista = JSON.parse(localStorage.getItem("evaluaciones") || "[]");
+        lista.push(evaluacion);
+        localStorage.setItem("evaluaciones", JSON.stringify(lista));
+ 
+        const btn = document.getElementById("btnGuardar");
+        btn.textContent       = "✓ Guardado";
+        btn.disabled          = true;
+        btn.style.background  = "#27500A";
+        btn.style.borderColor = "#27500A";
+ 
+        setTimeout(() => {
+            btn.textContent       = "💾 Guardar evaluación";
+            btn.disabled          = false;
+            btn.style.background  = "";
+            btn.style.borderColor = "";
+        }, 3000);
+ 
+        alert(`Evaluación de ${evaluacion.nombre} guardada correctamente.`);
+    });
+ 
     // =========================
     // EXPORTAR WORD
     // =========================
-    const btnExportarWord = document.getElementById("btnExportarWord");
-    if (btnExportarWord) {
-        btnExportarWord.addEventListener("click", async () => {
-
-            const nombreProf = document.getElementById("nombreProfesional").value.trim();
-            const cargo      = document.getElementById("cargoProfesional").value.trim();
-            const concepto   = document.getElementById("conceptoTecnico").value.trim();
-
-            if (!nombreProf || !cargo || !concepto) {
-                alert("Por favor completa el nombre del profesional, cargo y concepto técnico antes de descargar.");
-                return;
-            }
-
-            try {
-                const response = await fetch("assets/formato_tamizaje_plantilla.docx");
-                if (!response.ok) throw new Error("No se pudo cargar la plantilla Word.");
-                const arrayBuffer = await response.arrayBuffer();
-                const zip = new PizZip(arrayBuffer);
-                const doc = new docxtemplater(zip, { paragraphLoop: true, linebreaks: true });
-
-                const resultados = calcularResultadosPorCategoria();
-                const final      = calcularResultadoGeneral(resultados);
-
-                const datos = {
-                    fecha:             formatearFecha(document.getElementById("fecha").value),
-                    nombre:            document.getElementById("nombre").value || "",
-                    documento:         document.getElementById("documento").value || "",
-                    conceptoTecnico:   concepto,
-                    nombreProfesional: nombreProf,
-                    cargoProfesional:  cargo,
-                    ...generarCeldasPreguntas(),
-                    cat1p1: String(resultados[0].pregunta1), cat1p2: String(resultados[0].pregunta2), cat1p3: String(resultados[0].pregunta3), cat1p4: String(resultados[0].pregunta4), cat1p5: String(resultados[0].pregunta5), cat1suma: String(resultados[0].suma), cat1division: String(resultados[0].division), cat1resultado: resultados[0].porcentaje + "%", cat1tipo: resultados[0].tipoApoyo, cat1equiv: String(resultados[0].equivalencia),
-                    cat2p1: String(resultados[1].pregunta1), cat2p2: String(resultados[1].pregunta2), cat2p3: String(resultados[1].pregunta3), cat2p4: String(resultados[1].pregunta4), cat2p5: String(resultados[1].pregunta5), cat2suma: String(resultados[1].suma), cat2division: String(resultados[1].division), cat2resultado: resultados[1].porcentaje + "%", cat2tipo: resultados[1].tipoApoyo, cat2equiv: String(resultados[1].equivalencia),
-                    cat3p1: String(resultados[2].pregunta1), cat3p2: String(resultados[2].pregunta2), cat3p3: String(resultados[2].pregunta3), cat3p4: String(resultados[2].pregunta4), cat3p5: String(resultados[2].pregunta5), cat3suma: String(resultados[2].suma), cat3division: String(resultados[2].division), cat3resultado: resultados[2].porcentaje + "%", cat3tipo: resultados[2].tipoApoyo, cat3equiv: String(resultados[2].equivalencia),
-                    cat4p1: String(resultados[3].pregunta1), cat4p2: String(resultados[3].pregunta2), cat4p3: String(resultados[3].pregunta3), cat4p4: String(resultados[3].pregunta4), cat4p5: String(resultados[3].pregunta5), cat4suma: String(resultados[3].suma), cat4division: String(resultados[3].division), cat4resultado: resultados[3].porcentaje + "%", cat4tipo: resultados[3].tipoApoyo, cat4equiv: String(resultados[3].equivalencia),
-                    cat5p1: String(resultados[4].pregunta1), cat5p2: String(resultados[4].pregunta2), cat5p3: String(resultados[4].pregunta3), cat5p4: String(resultados[4].pregunta4), cat5p5: String(resultados[4].pregunta5), cat5suma: String(resultados[4].suma), cat5division: String(resultados[4].division), cat5resultado: resultados[4].porcentaje + "%", cat5tipo: resultados[4].tipoApoyo, cat5equiv: String(resultados[4].equivalencia),
-                    sumaGeneral: String(final.sumaGeneral), divisionGeneral: String(final.divisionGeneral),
-                    calculoGeneral: String(final.calculoGeneral), resultadoGeneral: final.porcentajeGeneral + "%",
-                    tipoApoyoGeneral: final.tipoApoyoGeneral
-                };
-
-                doc.setData(datos);
-                doc.render();
-
-                const blob = doc.getZip().generate({ type: "blob", mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
-                const nombreArchivo = `Tamizaje_${datos.nombre || "evaluacion"}_${datos.fecha}.docx`.replace(/\s+/g, "_").replace(/\//g, "-");
-                saveAs(blob, nombreArchivo);
-
-            } catch (error) {
-                console.error("Error al exportar:", error);
-                alert("Error al generar el documento. Revisa la consola para más detalles.");
-            }
-        });
-    }
-
-    // =========================
-    // EVENTO: INICIAR EVALUACIÓN
-    // =========================
-    const btnIniciar = document.getElementById("btnIniciar");
-    if (btnIniciar) {
-        btnIniciar.addEventListener("click", () => {
-            const fecha     = document.getElementById("fecha").value;
-            const nombre    = document.getElementById("nombre").value.trim();
-            const documento = document.getElementById("documento").value.trim();
-
-            if (!fecha || !nombre || !documento) {
-                alert("Por favor completa la fecha, nombre y documento antes de iniciar la evaluación.");
-                return;
-            }
-
-            indiceActual = 0;
-            respuestas   = [];
-            mostrarPantallaEvaluacion();
-            renderizarPregunta();
-        });
-    }
-
-    // =========================
-    // EVENTO: SIGUIENTE / FINALIZAR
-    // =========================
-    btnSiguiente.addEventListener("click", () => {
-        const guardadoOk = guardarRespuestaActual();
-        if (!guardadoOk) return;
-
-        if (indiceActual < preguntas.length - 1) {
-            indiceActual++;
-            renderizarPregunta();
-        } else {
-            mostrarResultadoFinal();
+    document.getElementById("btnExportarWord")?.addEventListener("click", async () => {
+        const nombreProf = document.getElementById("nombreProfesional").value.trim();
+        const cargo      = document.getElementById("cargoProfesional").value.trim();
+        const concepto   = document.getElementById("conceptoTecnico").value.trim();
+ 
+        if (!nombreProf || !cargo || !concepto) {
+            alert("Por favor completa el nombre del profesional, cargo y concepto técnico antes de descargar.");
+            return;
+        }
+ 
+        try {
+            const response = await fetch("assets/formato_tamizaje_plantilla.docx");
+            if (!response.ok) throw new Error("No se pudo cargar la plantilla.");
+            const zip = new PizZip(await response.arrayBuffer());
+            const doc = new docxtemplater(zip, { paragraphLoop: true, linebreaks: true });
+ 
+            const rc = calcularResultadosPorCategoria();
+            const rg = calcularResultadoGeneral(rc);
+ 
+            doc.setData({
+                fecha: formatearFecha(document.getElementById("fecha").value),
+                nombre: document.getElementById("nombre").value || "",
+                documento: document.getElementById("documento").value || "",
+                conceptoTecnico: concepto, nombreProfesional: nombreProf, cargoProfesional: cargo,
+                ...generarCeldasPreguntas(),
+                cat1p1:String(rc[0].pregunta1),cat1p2:String(rc[0].pregunta2),cat1p3:String(rc[0].pregunta3),cat1p4:String(rc[0].pregunta4),cat1p5:String(rc[0].pregunta5),cat1suma:String(rc[0].suma),cat1division:String(rc[0].division),cat1resultado:rc[0].porcentaje+"%",cat1tipo:rc[0].tipoApoyo,cat1equiv:String(rc[0].equivalencia),
+                cat2p1:String(rc[1].pregunta1),cat2p2:String(rc[1].pregunta2),cat2p3:String(rc[1].pregunta3),cat2p4:String(rc[1].pregunta4),cat2p5:String(rc[1].pregunta5),cat2suma:String(rc[1].suma),cat2division:String(rc[1].division),cat2resultado:rc[1].porcentaje+"%",cat2tipo:rc[1].tipoApoyo,cat2equiv:String(rc[1].equivalencia),
+                cat3p1:String(rc[2].pregunta1),cat3p2:String(rc[2].pregunta2),cat3p3:String(rc[2].pregunta3),cat3p4:String(rc[2].pregunta4),cat3p5:String(rc[2].pregunta5),cat3suma:String(rc[2].suma),cat3division:String(rc[2].division),cat3resultado:rc[2].porcentaje+"%",cat3tipo:rc[2].tipoApoyo,cat3equiv:String(rc[2].equivalencia),
+                cat4p1:String(rc[3].pregunta1),cat4p2:String(rc[3].pregunta2),cat4p3:String(rc[3].pregunta3),cat4p4:String(rc[3].pregunta4),cat4p5:String(rc[3].pregunta5),cat4suma:String(rc[3].suma),cat4division:String(rc[3].division),cat4resultado:rc[3].porcentaje+"%",cat4tipo:rc[3].tipoApoyo,cat4equiv:String(rc[3].equivalencia),
+                cat5p1:String(rc[4].pregunta1),cat5p2:String(rc[4].pregunta2),cat5p3:String(rc[4].pregunta3),cat5p4:String(rc[4].pregunta4),cat5p5:String(rc[4].pregunta5),cat5suma:String(rc[4].suma),cat5division:String(rc[4].division),cat5resultado:rc[4].porcentaje+"%",cat5tipo:rc[4].tipoApoyo,cat5equiv:String(rc[4].equivalencia),
+                sumaGeneral:String(rg.sumaGeneral),divisionGeneral:String(rg.divisionGeneral),
+                calculoGeneral:String(rg.calculoGeneral),resultadoGeneral:rg.porcentajeGeneral+"%",
+                tipoApoyoGeneral:rg.tipoApoyoGeneral
+            });
+            doc.render();
+            const blob = doc.getZip().generate({ type:"blob", mimeType:"application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
+            saveAs(blob, `Tamizaje_${document.getElementById("nombre").value||"evaluacion"}.docx`.replace(/\s+/g,"_"));
+ 
+        } catch (e) {
+            console.error(e);
+            alert("Error al generar el documento. Revisa la consola.");
         }
     });
-
+ 
     // =========================
-    // EVENTO: ANTERIOR
+    // INICIAR
     // =========================
+    document.getElementById("btnIniciar")?.addEventListener("click", () => {
+        const fecha     = document.getElementById("fecha").value;
+        const nombre    = document.getElementById("nombre").value.trim();
+        const documento = document.getElementById("documento").value.trim();
+        if (!fecha || !nombre || !documento) {
+            alert("Por favor completa la fecha, nombre y documento antes de iniciar.");
+            return;
+        }
+        indiceActual = 0;
+        respuestas   = [];
+        mostrarPantallaEvaluacion();
+        renderizarPregunta();
+    });
+ 
+    btnSiguiente.addEventListener("click", () => {
+        if (!guardarRespuestaActual()) return;
+        if (indiceActual < preguntas.length - 1) { indiceActual++; renderizarPregunta(); }
+        else mostrarResultadoFinal();
+    });
+ 
     btnAnterior.addEventListener("click", () => {
         if (indiceActual > 0) {
-            const opcionSeleccionada = document.querySelector(".opcion-card.seleccionada");
-            if (opcionSeleccionada) guardarRespuestaActual();
+            if (document.querySelector(".opcion-card.seleccionada")) guardarRespuestaActual();
             indiceActual--;
             renderizarPregunta();
         }
     });
-
-    // =========================
-    // SIDEBAR TOGGLE
-    // =========================
-    const sidebarToggle = document.body.querySelector("#sidebarToggle");
-    if (sidebarToggle) {
-        sidebarToggle.addEventListener("click", event => {
-            event.preventDefault();
-            document.body.classList.toggle("sb-sidenav-toggled");
-        });
-    }
-
-    // Arrancar en pantalla de inicio
+ 
+    document.querySelector("#sidebarToggle")?.addEventListener("click", e => {
+        e.preventDefault();
+        document.body.classList.toggle("sb-sidenav-toggled");
+    });
+ 
     mostrarPantallaInicio();
-});
+})
