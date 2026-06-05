@@ -111,6 +111,39 @@ incluye-plus/
 └── CONTEXT.md
 ```
 
+## 4. Flujo de atención — ciclo anual
+
+El sistema organiza la atención en ciclos anuales por PCD:
+
+Ingreso PCD → Sistema de apoyos → Estudio de caso → PPA → Sesiones → Seguimiento → Reporte
+
+- Cada año se re-aplica el sistema de apoyos para iniciar un nuevo ciclo
+- El comparativo entre ciclos evidencia reducción del nivel de apoyo
+- Las sesiones son diarias, predominantemente grupales con objetivos individuales
+- El PPA lo construye todo el equipo, cada profesional aporta desde su disciplina
+
+---
+
+## 5. Módulos y su estado
+
+### Módulo 1 — Sistema de apoyos ✅ Completo
+- [x] Flujo 3 pantallas, 25 preguntas, cálculo por categoría y general
+- [x] Panel de análisis con acordeón
+- [x] Exportar Word con todas las etiquetas correctas
+- [x] Validación de campos obligatorios
+- [x] Probado y funcionando
+- [ ] Conectar a base de datos (pendiente para cuando esté el backend)
+
+### Módulo 2 — PPA / Plan Personalizado de Apoyo 🔲 Siguiente
+- Objetivos por disciplina con estado: pendiente / en proceso / logrado
+- Actividades de refuerzo para casa
+- Exportar Word del PPA completo
+- Requiere backend con Prisma
+
+### Módulo 3 — Sesiones e intervención 🔲 Fase 2
+### Módulo 4 — Seguimiento y reportes 🔲 Fase 2
+### Módulo 5 — Dashboard general 🔲 Fase 3
+
 ## 6. Modelo de datos — ERD
 
 ### Tablas principales y relaciones
@@ -200,15 +233,36 @@ incluye-plus/
 
 ## 10. Sesión actual
 
-**Fecha:** 2 de junio de 2026
-**Objetivo de la sesión:** Planear ciclo de vida del software y diseñar el ERD
+## 10. Sesión actual
+
+**Fecha:** 5 de junio de 2026
+**Objetivo de la sesión:** Crear primeros endpoints de la API
 **Lo que se hizo:**
-- Redefinición del alcance real del sistema
-- Diseño del ERD completo con 10 tablas
-- Archivo DBML generado para dbdiagram.io
-- CONTEXT.md actualizado
-**Pendiente para próxima sesión:** Generar schema de Prisma
-**Archivos modificados:** CONTEXT.md, docs/incluye_plus_erd.dbml
+- Estructura de carpetas creada: src/lib/, src/routes/, src/controllers/
+- Prisma bajado de v7.8.0 a v5.22.0 (v7 incompatible con Node 22)
+- prisma.config.ts renombrado a prisma.config.ts.bak (interfería con el cliente)
+- url = env("DATABASE_URL") agregada al bloque datasource en schema.prisma
+- Backend corriendo correctamente en http://localhost:3000
+- Health check verificado: GET /api/health responde ok
+
+**Endpoints creados (pendiente probar con datos reales):**
+- POST /api/pcd — crea PCD + ciclo EN_CURSO en transacción
+- GET /api/pcd/:id — retorna PCD con cicloActivo, tamizajes y PPA
+- POST /api/tamizaje — registra valoración del sistema de apoyos
+
+**Archivos en CommonJS (require/module.exports), sin "type":"module"**
+
+**Pendiente para próxima sesión:**
+- Instalar Thunder Client
+- Crear seed.js con datos de prueba (entidad + profesional)
+- Probar los 3 endpoints con curl o Thunder Client
+- Conectar módulo 1 del frontend con el backend
+
+**Archivos modificados:**
+backend/package.json, backend/prisma/schema.prisma,
+backend/src/index.js, backend/src/lib/prisma.js,
+backend/src/routes/pcd.routes.js, backend/src/routes/tamizaje.routes.js,
+backend/src/controllers/pcd.controller.js, backend/src/controllers/tamizaje.controller.js
 
 ---
 
@@ -218,9 +272,22 @@ incluye-plus/
 - [ ] ¿El formato Word necesita página 3 completa (texto legal + firma)?
 - [ ] ¿El estudio de caso va dentro del módulo PPA o es un módulo separado?
 - [ ] ¿Cómo manejar el PPC (Plan Personalizado de Cuidado) para niveles extenso/generalizado vs PPA?
-- [ ] Definir schema completo de Prisma antes de construir el backend
+- [X] Definir schema completo de Prisma antes de construir el backend
 
 ---
+
+## 12. Decisiones técnicas aprendidas en sesión
+
+| Decisión | Razón |
+|----------|-------|
+| Prisma 5.22.0 (no v6 ni v7) | Prisma 7 es incompatible con Node 22 — genera errores de construcción del cliente |
+| CommonJS (`require`/`module.exports`) en todo el backend | ESM (`import`/`export`) con Prisma 5 en Node 22 causa conflictos de resolución de módulos |
+| Sin `"type": "module"` en package.json | Necesario para que CommonJS funcione correctamente |
+| `prisma.config.ts` renombrado a `.bak` | Cuando está activo interfiere con la generación del cliente Prisma |
+| `url = env("DATABASE_URL")` obligatorio en `datasource db` del schema | Sin esta línea Prisma 5 no valida ni genera el cliente |
+| `npx prisma generate --schema=./prisma/schema.prisma` | Siempre apuntar al schema explícitamente — sin la flag no lo encuentra |
+| Correr comandos npm/npx siempre desde `backend/` | Desde la raíz del proyecto los scripts no existen y los paths fallan |
+| Usar terminal integrado de VS Code, no PowerShell externo | PowerShell externo no reconoce comandos Unix (`rmdir /s /q`) y es más lento |
 
 *Actualizado por:* Jeisson Rangel
 *Proyecto iniciado:* 2026

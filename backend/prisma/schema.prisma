@@ -1,0 +1,228 @@
+// Incluye+ — Prisma Schema
+// Base de datos: PostgreSQL
+// Generado: junio 2026
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────
+// ENTIDAD — Fundación o IPS (multi-tenant)
+// ─────────────────────────────────────────
+model Entidad {
+  id          String   @id @default(uuid())
+  nombre      String
+  nit         String   @unique
+  activa      Boolean  @default(true)
+  creadoEn    DateTime @default(now())
+
+  profesionales Profesional[]
+  pcds          Pcd[]
+  sesiones      Sesion[]
+}
+
+// ─────────────────────────────────────────
+// PROFESIONAL — Usuario del sistema
+// ─────────────────────────────────────────
+model Profesional {
+  id         String   @id @default(uuid())
+  entidadId  String
+  nombre     String
+  documento  String
+  disciplina String   // 'terapeuta_ocupacional' | 'educador_especial' | 'psicologo' | etc.
+  email      String   @unique
+  password   String
+  rol        Rol      @default(PROFESIONAL)
+  activo     Boolean  @default(true)
+  creadoEn   DateTime @default(now())
+
+  entidad         Entidad          @relation(fields: [entidadId], references: [id])
+  tamizajes       Tamizaje[]
+  objetivosPpa    ObjetivoPpa[]
+  sesiones        Sesion[]
+}
+
+enum Rol {
+  COORDINADOR
+  PROFESIONAL
+}
+
+// ─────────────────────────────────────────
+// PCD — Persona con discapacidad
+// ─────────────────────────────────────────
+model Pcd {
+  id                   String   @id @default(uuid())
+  entidadId            String
+  nombre               String
+  documento            String
+  fechaNacimiento      DateTime
+  sexo                 String
+  localidad            String
+  diagnosticoPrincipal String
+  tipoDiscapacidad     String   // 'intelectual' | 'multiple'
+  estado               Estado   @default(ACTIVO)
+  creadoEn             DateTime @default(now())
+
+  entidad          Entidad           @relation(fields: [entidadId], references: [id])
+  ciclos           Ciclo[]
+  registrosSesion  RegistroSesion[]
+}
+
+enum Estado {
+  ACTIVO
+  INACTIVO
+  EGRESO
+}
+
+// ─────────────────────────────────────────
+// CICLO — Año de atención (eje central)
+// ─────────────────────────────────────────
+model Ciclo {
+  id          String      @id @default(uuid())
+  pcdId       String
+  anio        Int
+  fechaInicio DateTime
+  fechaFin    DateTime?
+  estado      EstadoCiclo @default(EN_CURSO)
+  creadoEn    DateTime    @default(now())
+
+  pcd              Pcd              @relation(fields: [pcdId], references: [id])
+  tamizajes        Tamizaje[]
+  ppa              Ppa?
+  registrosSesion  RegistroSesion[]
+}
+
+enum EstadoCiclo {
+  EN_CURSO
+  CERRADO
+}
+
+// ─────────────────────────────────────────
+// TAMIZAJE — Sistema de apoyos
+// ─────────────────────────────────────────
+model Tamizaje {
+  id                  String   @id @default(uuid())
+  cicloId             String
+  profesionalId       String
+  fecha               DateTime @default(now())
+  nivelApoyoGeneral   Int      // 0=ninguno 1=intermitente 2=limitado 3=extenso
+  tipoApoyoGeneral    String
+  respuestas          Json     // {p1: 2, p2: 1, ...}
+  resultadosCategoria Json     // {cat1: {suma, porcentaje, tipo}, ...}
+  creadoEn            DateTime @default(now())
+
+  ciclo       Ciclo       @relation(fields: [cicloId], references: [id])
+  profesional Profesional @relation(fields: [profesionalId], references: [id])
+}
+
+// ─────────────────────────────────────────
+// PPA — Plan Personalizado de Apoyo
+// ─────────────────────────────────────────
+model Ppa {
+  id              String    @id @default(uuid())
+  cicloId         String    @unique
+  fechaCreacion   DateTime  @default(now())
+  estado          EstadoPpa @default(BORRADOR)
+  actividadesCasa String?   // texto libre para actividades de refuerzo en casa
+  creadoEn        DateTime  @default(now())
+
+  ciclo    Ciclo         @relation(fields: [cicloId], references: [id])
+  objetivos ObjetivoPpa[]
+}
+
+enum EstadoPpa {
+  BORRADOR
+  ACTIVO
+  CERRADO
+}
+
+// ─────────────────────────────────────────
+// OBJETIVO PPA — Por disciplina
+// ─────────────────────────────────────────
+model ObjetivoPpa {
+  id            String         @id @default(uuid())
+  ppaId         String
+  profesionalId String
+  disciplina    String
+  descripcion   String
+  estado        EstadoObjetivo @default(PENDIENTE)
+  fechaLogro    DateTime?
+  creadoEn      DateTime       @default(now())
+
+  ppa         Ppa         @relation(fields: [ppaId], references: [id])
+  profesional Profesional @relation(fields: [profesionalId], references: [id])
+  objetivosTrabajados ObjetivoTrabajado[]
+}
+
+enum EstadoObjetivo {
+  PENDIENTE
+  EN_PROCESO
+  LOGRADO
+}
+
+// ─────────────────────────────────────────
+// SESION — Evento de intervención
+// ─────────────────────────────────────────
+model Sesion {
+  id                 String       @id @default(uuid())
+  profesionalId      String
+  entidadId          String
+  fecha              DateTime
+  tipo               TipoSesion
+  modalidad          Modalidad    @default(PRESENCIAL)
+  descripcionGeneral String?
+  creadoEn           DateTime     @default(now())
+
+  profesional     Profesional      @relation(fields: [profesionalId], references: [id])
+  entidad         Entidad          @relation(fields: [entidadId], references: [id])
+  registros       RegistroSesion[]
+}
+
+enum TipoSesion {
+  GRUPAL
+  INDIVIDUAL
+}
+
+enum Modalidad {
+  PRESENCIAL
+  VIRTUAL
+}
+
+// ─────────────────────────────────────────
+// REGISTRO SESION — PCD dentro de una sesión
+// ─────────────────────────────────────────
+model RegistroSesion {
+  id                 String   @id @default(uuid())
+  sesionId           String
+  pcdId              String
+  cicloId            String
+  asistio            Boolean  @default(true)
+  descripcion        String?
+  huboAvance         Boolean  @default(false)
+  descripcionAvance  String?
+  creadoEn           DateTime @default(now())
+
+  sesion    Sesion    @relation(fields: [sesionId], references: [id])
+  pcd       Pcd       @relation(fields: [pcdId], references: [id])
+  ciclo     Ciclo     @relation(fields: [cicloId], references: [id])
+  objetivosTrabajados ObjetivoTrabajado[]
+}
+
+// ─────────────────────────────────────────
+// OBJETIVO TRABAJADO — Tabla puente
+// ─────────────────────────────────────────
+model ObjetivoTrabajado {
+  id               String @id @default(uuid())
+  registroSesionId String
+  objetivoPpaId    String
+
+  registroSesion RegistroSesion @relation(fields: [registroSesionId], references: [id])
+  objetivoPpa    ObjetivoPpa    @relation(fields: [objetivoPpaId], references: [id])
+
+  @@unique([registroSesionId, objetivoPpaId])
+}
