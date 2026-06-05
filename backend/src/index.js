@@ -10,6 +10,11 @@ const PORT = process.env.PORT || 3000
 app.use(cors())
 app.use(express.json())
 
+app.use((req, _res, next) => {
+  console.log(`${req.method} ${req.url}`)
+  next()
+})
+
 app.use('/api/pcd', pcdRoutes)
 app.use('/api/tamizaje', tamizajeRoutes)
 
