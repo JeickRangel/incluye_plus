@@ -233,37 +233,94 @@ Ingreso PCD → Sistema de apoyos → Estudio de caso → PPA → Sesiones → S
 
 ## 10. Sesión actual
 
-Aquí está la actualización para la sección 10 de tu CONTEXT.md:
-markdown## 10. Sesión actual
+**Fecha:** 8 de junio de 2026
 
-**Fecha:** 5 de junio de 2026
-**Objetivo de la sesión:** Probar los 3 endpoints con datos reales
-**Lo que se hizo:**
-- Thunder Client instalado como extensión de VS Code
-- seed.js creado en backend/prisma/seed.js y ejecutado exitosamente
-- Base de datos poblada con entidad y profesional de prueba
-- Los 3 endpoints probados y funcionando correctamente
+### Objetivo de la sesión
+Conectar el frontend del módulo de Sistema de Apoyos con el backend de Incluye+ y validar el guardado real en PostgreSQL.
 
-**IDs de prueba (guardar para desarrollo):**
-- entidadId:     47740e7b-1560-41ce-98c5-af3e1d290642
-- profesionalId: 6b0fccdd-08a2-474a-b96e-cc3470a928ab
-- pcdId:         5dde6613-1c48-4cdf-bade-5099ee8c2318
-- cicloId:       db78b3bd-279e-42eb-a41f-f71392e9a517
-- tamizajeId:    5ed1d008-fa19-4251-a914-962954dee842
+### Lo que se hizo
 
-**Endpoints probados:**
-- POST /api/pcd — crea PCD + ciclo EN_CURSO en transacción ✅
-- GET /api/pcd/:id — retorna PCD con cicloActivo, tamizajes y PPA ✅
-- POST /api/tamizaje — registra valoración del sistema de apoyos ✅
+- Se verificó el funcionamiento de Prisma Studio.
+- Se confirmó que el backend Express estaba funcionando mediante:
+  - GET /api/health
+  - POST /api/tamizaje
+- Se validó la estructura generada por:
+  - calcularResultadosPorCategoria()
+  - calcularResultadoGeneral()
+- Se inspeccionó el payload generado por el frontend antes de enviarlo al backend.
+- Se confirmó que:
+  - respuestas contiene las 25 preguntas respondidas.
+  - resultadosCategoria contiene las 5 categorías evaluadas.
+  - nivelApoyoGeneral y tipoApoyoGeneral se calculan correctamente.
+- Se creó la función:
+  - guardarTamizajeBackend()
+- Se integró el botón "Guardar evaluación" con:
+  - POST http://localhost:3000/api/tamizaje
+- Se mantuvo localStorage como mecanismo de respaldo temporal.
+- Se identificó y resolvió el error:
+  - ERR_CONNECTION_REFUSED
+  - causado porque el backend estaba detenido (npm run dev cerrado).
+- Se realizó una prueba completa desde la interfaz gráfica.
+- Se confirmó que el tamizaje se almacena correctamente en PostgreSQL.
+- Se verificó en Prisma Studio la creación de nuevos registros en la tabla Tamizaje.
 
-**Pendiente para próxima sesión:**
-- Conectar módulo 1 del frontend con el backend
-- Reemplazar localStorage por llamadas reales a la API
-- Probar flujo completo: llenar tamizaje en frontend → guardar en BD
+### Estado actual del módulo de Tamizaje
 
-**Archivos modificados:**
-backend/prisma/seed.js, backend/src/index.js (log temporal agregado)
----
+✅ Frontend funcional
+
+✅ Backend funcional
+
+✅ Integración frontend ↔ backend funcional
+
+✅ Persistencia en PostgreSQL funcional
+
+✅ Prisma Studio funcional
+
+### Decisiones de arquitectura confirmadas
+
+- La entidad central del sistema es el Ciclo.
+- Cada PCD puede tener múltiples ciclos de atención.
+- Cada ciclo puede contener:
+  - Tamizajes
+  - PPA
+  - Registros de sesión
+- Las respuestas de las 25 preguntas se almacenan en el campo JSON:
+  - Tamizaje.respuestas
+- Los resultados por categoría se almacenan en:
+  - Tamizaje.resultadosCategoria
+
+### Pendientes identificados
+
+#### Prioridad alta
+
+- Eliminar IDs de prueba (hardcoded):
+  - cicloId = db78b3bd-279e-42eb-a41f-f71392e9a517
+  - profesionalId = 6b0fccdd-08a2-474a-b96e-cc3470a928ab
+- Crear flujo real:
+  - Registrar PCD
+  - Crear ciclo
+  - Buscar PCD
+  - Obtener ciclo activo
+  - Realizar evaluación
+  - Guardar tamizaje
+
+#### Mejoras futuras
+
+- Evaluar almacenar también:
+  - sumaGeneral
+  - porcentajeGeneral
+  - calculoGeneral
+- Diseñar módulo de reportes estadísticos por:
+  - tipo de discapacidad
+  - localidad
+  - sexo
+  - diagnóstico
+  - nivel de apoyo
+
+### Commits realizados
+
+- Validación completa backend tamizaje
+- Integración frontend tamizaje con backend
 
 ## 11. Preguntas o dudas abiertas
 
