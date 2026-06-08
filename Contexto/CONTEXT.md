@@ -233,37 +233,36 @@ Ingreso PCD → Sistema de apoyos → Estudio de caso → PPA → Sesiones → S
 
 ## 10. Sesión actual
 
-## 10. Sesión actual
+Aquí está la actualización para la sección 10 de tu CONTEXT.md:
+markdown## 10. Sesión actual
 
 **Fecha:** 5 de junio de 2026
-**Objetivo de la sesión:** Crear primeros endpoints de la API
+**Objetivo de la sesión:** Probar los 3 endpoints con datos reales
 **Lo que se hizo:**
-- Estructura de carpetas creada: src/lib/, src/routes/, src/controllers/
-- Prisma bajado de v7.8.0 a v5.22.0 (v7 incompatible con Node 22)
-- prisma.config.ts renombrado a prisma.config.ts.bak (interfería con el cliente)
-- url = env("DATABASE_URL") agregada al bloque datasource en schema.prisma
-- Backend corriendo correctamente en http://localhost:3000
-- Health check verificado: GET /api/health responde ok
+- Thunder Client instalado como extensión de VS Code
+- seed.js creado en backend/prisma/seed.js y ejecutado exitosamente
+- Base de datos poblada con entidad y profesional de prueba
+- Los 3 endpoints probados y funcionando correctamente
 
-**Endpoints creados (pendiente probar con datos reales):**
-- POST /api/pcd — crea PCD + ciclo EN_CURSO en transacción
-- GET /api/pcd/:id — retorna PCD con cicloActivo, tamizajes y PPA
-- POST /api/tamizaje — registra valoración del sistema de apoyos
+**IDs de prueba (guardar para desarrollo):**
+- entidadId:     47740e7b-1560-41ce-98c5-af3e1d290642
+- profesionalId: 6b0fccdd-08a2-474a-b96e-cc3470a928ab
+- pcdId:         5dde6613-1c48-4cdf-bade-5099ee8c2318
+- cicloId:       db78b3bd-279e-42eb-a41f-f71392e9a517
+- tamizajeId:    5ed1d008-fa19-4251-a914-962954dee842
 
-**Archivos en CommonJS (require/module.exports), sin "type":"module"**
+**Endpoints probados:**
+- POST /api/pcd — crea PCD + ciclo EN_CURSO en transacción ✅
+- GET /api/pcd/:id — retorna PCD con cicloActivo, tamizajes y PPA ✅
+- POST /api/tamizaje — registra valoración del sistema de apoyos ✅
 
 **Pendiente para próxima sesión:**
-- Instalar Thunder Client
-- Crear seed.js con datos de prueba (entidad + profesional)
-- Probar los 3 endpoints con curl o Thunder Client
 - Conectar módulo 1 del frontend con el backend
+- Reemplazar localStorage por llamadas reales a la API
+- Probar flujo completo: llenar tamizaje en frontend → guardar en BD
 
 **Archivos modificados:**
-backend/package.json, backend/prisma/schema.prisma,
-backend/src/index.js, backend/src/lib/prisma.js,
-backend/src/routes/pcd.routes.js, backend/src/routes/tamizaje.routes.js,
-backend/src/controllers/pcd.controller.js, backend/src/controllers/tamizaje.controller.js
-
+backend/prisma/seed.js, backend/src/index.js (log temporal agregado)
 ---
 
 ## 11. Preguntas o dudas abiertas

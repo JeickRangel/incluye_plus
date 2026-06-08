@@ -304,7 +304,8 @@ window.addEventListener("DOMContentLoaded", () => {
     function mostrarResultadoFinal() {
         const rc = calcularResultadosPorCategoria();
         const rg = calcularResultadoGeneral(rc);
- 
+        
+        
         let html = `
             <div class="card mb-4">
                 <div class="card-body">
