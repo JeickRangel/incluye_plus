@@ -357,10 +357,36 @@ window.addEventListener("DOMContentLoaded", () => {
         document.getElementById("contenedor-botones").style.display = "flex";
     }
  
+    //Prueba de sesion↓
+    async function guardarTamizajeBackend(payload) {
+
+    const response = await fetch(
+        "http://localhost:3000/api/tamizaje",
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
+        }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(
+            data.error || "Error al guardar tamizaje"
+        );
+    }
+
+    return data;
+}
+    //↑
+
     // =========================
     // GUARDAR EVALUACIÓN
     // =========================
-    document.getElementById("btnGuardar")?.addEventListener("click", () => {
+    document.getElementById("btnGuardar")?.addEventListener("click", async () => {
         const nombreProf = document.getElementById("nombreProfesional").value.trim();
         const cargo      = document.getElementById("cargoProfesional").value.trim();
         const concepto   = document.getElementById("conceptoTecnico").value.trim();
@@ -372,7 +398,48 @@ window.addEventListener("DOMContentLoaded", () => {
  
         const rc = calcularResultadosPorCategoria();
         const rg = calcularResultadoGeneral(rc);
- 
+
+        //prueba sesion ↓
+        const payload = {
+
+        cicloId: "db78b3bd-279e-42eb-a41f-f71392e9a517",
+
+        profesionalId: "6b0fccdd-08a2-474a-b96e-cc3470a928ab",
+
+        nivelApoyoGeneral: rg.equivalenciaGeneral,
+
+        tipoApoyoGeneral: rg.tipoApoyoGeneral,
+
+        respuestas,
+
+        resultadosCategoria: rc
+        };
+        //↑
+        //Aqui tambien ↓
+        try {
+
+    const resultado =
+        await guardarTamizajeBackend(payload);
+
+    console.log(
+        "Tamizaje guardado en BD:",
+        resultado
+    );
+
+} catch (error) {
+
+    console.error(error);
+
+    alert(
+        "Error al guardar en la base de datos: "
+        + error.message
+    );
+
+    return;
+}
+
+    //↑
+
         const evaluacion = {
             id:        Date.now(),
             fecha:     document.getElementById("fecha").value,
