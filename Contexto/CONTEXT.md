@@ -16,12 +16,11 @@
 - Generación automática de documentos oficiales (formato SDIS FOR-PSS-159)
 - Análisis grupal para toma de decisiones
 
-
 **Contexto del servicio:**
 - Población: personas con discapacidad intelectual o múltiple asociada a intelectual, entre 18 y 60 años, residentes en Bogotá
 - Tamaño típico: 50–60 PCD por servicio
 - Dos tipos de servicio: apoyo intermitente/limitado y apoyo extenso/generalizado
-- El ingreso al sistema implica que la persona ya es elegible; no se hace verificación dentro de la app 
+- El ingreso al sistema implica que la persona ya es elegible; no se hace verificación dentro de la app
 
 **Usuarios objetivo:**
 - Coordinador (acceso total a todos los módulos)
@@ -37,19 +36,21 @@
 ## 2. Stack tecnológico
 
 ### Actual (fase inicial — prototipo funcional)
-| Capa                      | Tecnología                                            |        
-|---------------------------|-------------------------------------------------------|  
+| Capa                      | Tecnología                                            |
+|---------------------------|-------------------------------------------------------|
 | Frontend                  | HTML + CSS propio + Bootstrap 5.2 (en transición)     |
 | Lógica                    | JavaScript vanilla                                    |
 | Documentos                | docxtemplater + PizZip + FileSaver.js                 |
-| Almacenamiento            | localStorage (temporal)                               |
+| Almacenamiento            | localStorage (temporal) + PostgreSQL (activo)         |
+| Backend                   | Node.js + Express (activo)                            |
+| ORM                       | Prisma 5.22.0                                         |
 | Estilos                   | CSS propio con variables (paleta verde azulado)       |
 
 ### Objetivo (fase profesional)
 | Capa          | Tecnología                        | Razón                         |
 |---------------|-----------------------------------|------------------------------ |
 | Frontend      | React + Vite                      | Componentes, escalabilidad    |
-| Estilos       | Tailwind CSS                      | Más limpio que Bootstrap      |    
+| Estilos       | Tailwind CSS                      | Más limpio que Bootstrap      |
 | Backend       | Node.js + Express                 | JS full stack                 |
 | Base de datos | PostgreSQL + Prisma ORM           | Profesional, legible          |
 | Autenticación | JWT + bcrypt                      | Estándar seguro               |
@@ -76,19 +77,36 @@ incluye_plus/
 ├── assets/
 │   ├── favicon.ico
 │   ├── logoSDIS.png
-│   └── formato_tamizaje_plantilla.docx   # Plantilla Word con etiquetas
-├── Contexto
-│   └── CONTEXT.md                  # Este archivo
+│   └── formato_tamizaje_plantilla.docx
+├── Contexto/
+│   └── CONTEXT.md
 ├── css/
-│   └── styles.css              # CSS propio limpio con variables
+│   └── styles.css
 ├── js/
-│   ├── data.js                 # Preguntas, escala de calificación
-│   └── scripts.js              # Lógica principal
-├── libs/                       # Librerías locales (sin CDN)
+│   ├── data.js
+│   └── scripts.js
+├── libs/
 │   ├── pizzip.min.js
 │   ├── docxtemplater.js
 │   └── FileSaver.min.js
-└── index.html                  # Página principal (tamizaje)
+├── index.html
+└── backend/
+    ├── src/
+    │   ├── controllers/
+    │   │   ├── pcd.controller.js        ✅
+    │   │   ├── tamizaje.controller.js   ✅
+    │   │   ├── profesional.controller.js ✅ nuevo
+    │   │   └── ciclo.controller.js      ✅ nuevo
+    │   ├── routes/
+    │   │   ├── pcd.routes.js            ✅ actualizado
+    │   │   ├── tamizaje.routes.js       ✅
+    │   │   ├── profesional.routes.js    ✅ nuevo
+    │   │   └── ciclo.routes.js          ✅ nuevo
+    │   ├── lib/
+    │   │   └── prisma.js
+    │   └── index.js
+    └── prisma/
+        └── schema.prisma
 ```
 
 ### Estructura objetivo (cuando migre a React)
@@ -105,15 +123,15 @@ incluye-plus/
 │   ├── src/
 │   │   ├── routes/
 │   │   ├── controllers/
-│   │   ├── models/         # Prisma schemas
+│   │   ├── models/
 │   │   └── middleware/
 │   └── prisma/
 └── CONTEXT.md
 ```
 
-## 4. Flujo de atención — ciclo anual
+---
 
-El sistema organiza la atención en ciclos anuales por PCD:
+## 4. Flujo de atención — ciclo anual
 
 Ingreso PCD → Sistema de apoyos → Estudio de caso → PPA → Sesiones → Seguimiento → Reporte
 
@@ -126,25 +144,37 @@ Ingreso PCD → Sistema de apoyos → Estudio de caso → PPA → Sesiones → S
 
 ## 5. Módulos y su estado
 
-### Módulo 1 — Sistema de apoyos ✅ Completo
+### Módulo 1 — Sistema de apoyos ✅ Completo (frontend + backend integrados)
 - [x] Flujo 3 pantallas, 25 preguntas, cálculo por categoría y general
 - [x] Panel de análisis con acordeón
 - [x] Exportar Word con todas las etiquetas correctas
 - [x] Validación de campos obligatorios
-- [x] Probado y funcionando
-- [ ] Conectar a base de datos (pendiente para cuando esté el backend)
+- [x] Backend Express + PostgreSQL + Prisma funcionando
+- [x] POST /api/tamizaje guardando en BD
+- [ ] Eliminar IDs hardcodeados — endpoints listos, falta pantalla de inicio en frontend
 
 ### Módulo 2 — PPA / Plan Personalizado de Apoyo 🔲 Siguiente
-- Objetivos por disciplina con estado: pendiente / en proceso / logrado
-- Actividades de refuerzo para casa
-- Exportar Word del PPA completo
-- Requiere backend con Prisma
-
 ### Módulo 3 — Sesiones e intervención 🔲 Fase 2
 ### Módulo 4 — Seguimiento y reportes 🔲 Fase 2
 ### Módulo 5 — Dashboard general 🔲 Fase 3
 
-## 6. Modelo de datos — ERD
+---
+
+## 6. API — Endpoints disponibles
+
+| Método | Ruta | Descripción | Estado |
+|--------|------|-------------|--------|
+| POST | `/api/tamizaje` | Crea un nuevo tamizaje | ✅ |
+| POST | `/api/pcd` | Registra una nueva PCD + crea ciclo | ✅ |
+| GET | `/api/pcd/:id` | Obtiene PCD por ID con ciclo activo | ✅ |
+| GET | `/api/pcd/buscar?documento=X&entidadId=X` | Busca PCD por documento | ✅ nuevo |
+| GET | `/api/profesionales?entidadId=X` | Lista profesionales de una entidad | ✅ nuevo |
+| GET | `/api/ciclos/activo/:pcdId` | Obtiene o crea el ciclo activo del año | ✅ nuevo |
+| GET | `/api/health` | Verifica que el servidor está activo | ✅ |
+
+---
+
+## 7. Modelo de datos — ERD
 
 ### Tablas principales y relaciones
 
@@ -153,7 +183,7 @@ Ingreso PCD → Sistema de apoyos → Estudio de caso → PPA → Sesiones → S
 | `entidad`             | Fundación o IPS           | Tiene muchos profesionales y PCD |
 | `profesional`         | Usuario del sistema       | Pertenece a entidad, tiene rol |
 | `pcd`                 | Persona con discapacidad  | Pertenece a entidad, tiene ciclos |
-| `ciclo`               | Año de atención de una PCD|Eje central — conecta tamizaje, PPA y sesiones|
+| `ciclo`               | Año de atención de una PCD| Eje central — conecta tamizaje, PPA y sesiones |
 | `tamizaje`            | Resultado del sistema de apoyos | Pertenece a ciclo y profesional |
 | `ppa`                 | Plan Personalizado de Apoyo | Uno por ciclo (relación 1 a 1) |
 | `objetivo_ppa`        | Objetivo individual dentro del PPA | Pertenece a PPA y profesional |
@@ -165,8 +195,7 @@ Ingreso PCD → Sistema de apoyos → Estudio de caso → PPA → Sesiones → S
 - Todas las tablas principales tienen `entidad_id` para soportar multi-tenant futuro
 - `id` es `uuid` en todas las tablas (no autoincremental)
 - `ciclo` es el eje que permite comparar evolución entre años
-- Campos cualitativos (observaciones, descripciones) se guardan como `text` en PostgreSQL
-- El archivo DBML para dbdiagram.io está en `/docs/incluye_plus_erd.dbml`
+- Campos cualitativos se guardan como `text` en PostgreSQL
 
 ### Roles del sistema
 - `coordinador`: acceso total a todos los módulos
@@ -174,7 +203,7 @@ Ingreso PCD → Sistema de apoyos → Estudio de caso → PPA → Sesiones → S
 
 ---
 
-## 7. Convenciones de código
+## 8. Convenciones de código
 
 ### JavaScript
 - Funciones con nombre descriptivo en camelCase: `calcularResultadoGeneral()`
@@ -185,165 +214,125 @@ Ingreso PCD → Sistema de apoyos → Estudio de caso → PPA → Sesiones → S
 ### CSS
 - Variables en `:root` para todos los colores y tamaños
 - Clases en kebab-case: `.card-profesional`, `.panel-analisis`
-- Agrupar por sección con comentarios: `/* NAVBAR */`, `/* CARDS */`
 - Mobile-first con `@media (min-width: 768px)` para desktop
-
-### HTML
-- IDs para elementos únicos referenciados en JS: `id="btnIniciar"`
-- Clases para estilos reutilizables: `class="btn btn-primary"`
-- Comentarios de sección: `<!-- PANTALLA 1: INICIO -->`
 
 ### Nombrado de etiquetas Word (docxtemplater)
 - Datos personales: `{fecha}`, `{nombre}`, `{documento}`
-- Preguntas: `{p1c0}` a `{p25c3}` (pregunta N, columna valor)
-- Matriz: `{cat1p1}` a `{cat5equiv}`
-- General: `{sumaGeneral}`, `{divisionGeneral}`, `{calculoGeneral}`, `{resultadoGeneral}`, `{tipoApoyoGeneral}`
+- Preguntas: `{p1c0}` a `{p25c3}`
+- Categorías: `{cat1p1}` a `{cat5equiv}`
+- General: `{sumaGeneral}`, `{resultadoGeneral}`, `{tipoApoyoGeneral}`
 - Profesional: `{nombreProfesional}`, `{cargoProfesional}`, `{conceptoTecnico}`
 
 ---
 
-## 8. Archivos clave y su rol
+## 9. Archivos clave y su rol
 
-| Archivo                                   | Rol |
-|---------                                  |-----|
-| `js/data.js`                              | Arreglo `preguntas[]`y arreglo `escalaCalificacion[]` |
-| `js/scripts.js`                           | Toda la lógica: pantallas, cálculos, panel, exportar, guardar |
-| `css/styles.css`                          | Estilos completos con variables de color |
-| `index.html`                              | Estructura de 3 pantallas + referencias a scripts |
-| `assets/formato_tamizaje_plantilla.docx`  | Plantilla Word con 155 etiquetas insertadas |
-| `docs/incluye_plus_erd.dbml`              | Diagrama de base de datos para dbdiagram.io |
+| Archivo | Rol |
+|---------|-----|
+| `js/data.js` | Arreglo `preguntas[]` y `escalaCalificacion[]` |
+| `js/scripts.js` | Lógica: pantallas, cálculos, panel, exportar, guardar |
+| `css/styles.css` | Estilos completos con variables de color |
+| `index.html` | Estructura de 3 pantallas + referencias a scripts |
+| `assets/formato_tamizaje_plantilla.docx` | Plantilla Word con 155 etiquetas |
+| `backend/src/controllers/pcd.controller.js` | CRUD de PCD + búsqueda por documento |
+| `backend/src/controllers/tamizaje.controller.js` | Crear tamizaje en BD |
+| `backend/src/controllers/profesional.controller.js` | Listar profesionales |
+| `backend/src/controllers/ciclo.controller.js` | Obtener o crear ciclo activo |
+| `backend/prisma/schema.prisma` | Definición completa del modelo de datos |
+| `docs/diario_tecnico_incluye_plus.md` | Diario técnico del proyecto |
 
 ---
 
-## 9. Decisiones técnicas tomadas
+## 10. Decisiones técnicas tomadas
 
-| Decisión                                     | Razón |
-|----------                                    |-------|
-| Librerías locales en `/libs` en vez de CDN   | CDN bloqueado por ERR_BLOCKED_BY_ORB en el entorno |
-| CSS propio en vez de solo Bootstrap          | Bootstrap traía demasiado CSS no usado |
-| 3 pantallas en una sola página (sin router)  | Simplicidad en la fase inicial sin React |
-| localStorage temporal para guardar           | Permite probar sin backend, fácil de reemplazar |
-| docxtemplater en lugar de generar PDF desde cero | El formato oficial es Word, resultado idéntico al original |
-| uuid como PK en todas las tablas             | Preparado para multi-tenant y sincronización futura |
-| Tabla `ciclo` como eje central               | Permite comparar evolución anual por PCD |
+| Decisión | Razón |
+|----------|-------|
+| Librerías locales en `/libs` en vez de CDN | CDN bloqueado por ERR_BLOCKED_BY_ORB en el entorno |
+| CSS propio en vez de solo Bootstrap | Bootstrap traía demasiado CSS no usado |
+| 3 pantallas en una sola página (sin router) | Simplicidad en la fase inicial sin React |
+| localStorage temporal para guardar | Permite probar sin backend, fácil de reemplazar |
+| docxtemplater en lugar de generar PDF | El formato oficial es Word |
+| uuid como PK en todas las tablas | Preparado para multi-tenant y sincronización futura |
+| Tabla `ciclo` como eje central | Permite comparar evolución anual por PCD |
 | `entidad_id` en tablas principales desde el inicio | Soporte multi-tenant sin migración futura |
-| Migración a React solo cuando módulo 1 esté completo y probado | Evitar debuggear lógica y framework al mismo tiempo |
+| Migración a React solo cuando módulo 1 esté completo | Evitar debuggear lógica y framework al mismo tiempo |
+| Prisma 5.22.0 (no v6 ni v7) | Prisma 7 es incompatible con Node 22 |
+| CommonJS en todo el backend | ESM con Prisma 5 en Node 22 causa conflictos |
+| Sin `"type": "module"` en package.json | Necesario para que CommonJS funcione correctamente |
+| `GET /buscar` antes de `GET /:id` en rutas | Express lee en orden — rutas específicas antes que dinámicas |
+| `select` en queries de profesionales | No exponer el campo `password` en respuestas de la API |
+| Patrón "obtener o crear" en ciclo activo | El frontend no necesita saber si el ciclo ya existía |
+| API-first: backend antes que frontend | El frontend necesita datos reales para probarse |
 
 ---
 
-## 10. Sesión actual
+## 11. Sesión actual
 
-**Fecha:** 8 de junio de 2026
+**Fecha:** 9 de junio de 2026
 
 ### Objetivo de la sesión
-Conectar el frontend del módulo de Sistema de Apoyos con el backend de Incluye+ y validar el guardado real en PostgreSQL.
+Construir los endpoints necesarios para eliminar los IDs hardcodeados del módulo de tamizaje.
 
 ### Lo que se hizo
+- Se crearon 3 endpoints nuevos en el backend: `GET /api/profesionales`, `GET /api/pcd/buscar`, `GET /api/ciclos/activo/:pcdId`
+- Se insertaron datos de prueba en PostgreSQL con Prisma Studio (Entidad, Profesional, PCD)
+- Se probaron los tres endpoints con Thunder Client — todos respondieron 200 OK
+- Se creó el diario técnico del proyecto (`diario_tecnico_incluye_plus.md`)
+- Se actualizaron CONTEXT.md y diario técnico para commit a Git
 
-- Se verificó el funcionamiento de Prisma Studio.
-- Se confirmó que el backend Express estaba funcionando mediante:
-  - GET /api/health
-  - POST /api/tamizaje
-- Se validó la estructura generada por:
-  - calcularResultadosPorCategoria()
-  - calcularResultadoGeneral()
-- Se inspeccionó el payload generado por el frontend antes de enviarlo al backend.
-- Se confirmó que:
-  - respuestas contiene las 25 preguntas respondidas.
-  - resultadosCategoria contiene las 5 categorías evaluadas.
-  - nivelApoyoGeneral y tipoApoyoGeneral se calculan correctamente.
-- Se creó la función:
-  - guardarTamizajeBackend()
-- Se integró el botón "Guardar evaluación" con:
-  - POST http://localhost:3000/api/tamizaje
-- Se mantuvo localStorage como mecanismo de respaldo temporal.
-- Se identificó y resolvió el error:
-  - ERR_CONNECTION_REFUSED
-  - causado porque el backend estaba detenido (npm run dev cerrado).
-- Se realizó una prueba completa desde la interfaz gráfica.
-- Se confirmó que el tamizaje se almacena correctamente en PostgreSQL.
-- Se verificó en Prisma Studio la creación de nuevos registros en la tabla Tamizaje.
+### Estado actual
 
-### Estado actual del módulo de Tamizaje
-
-✅ Frontend funcional
-
-✅ Backend funcional
-
-✅ Integración frontend ↔ backend funcional
-
-✅ Persistencia en PostgreSQL funcional
-
-✅ Prisma Studio funcional
-
-### Decisiones de arquitectura confirmadas
-
-- La entidad central del sistema es el Ciclo.
-- Cada PCD puede tener múltiples ciclos de atención.
-- Cada ciclo puede contener:
-  - Tamizajes
-  - PPA
-  - Registros de sesión
-- Las respuestas de las 25 preguntas se almacenan en el campo JSON:
-  - Tamizaje.respuestas
-- Los resultados por categoría se almacenan en:
-  - Tamizaje.resultadosCategoria
+✅ Backend con 6 endpoints funcionales
+✅ PostgreSQL con datos de prueba reales
+✅ Diario técnico iniciado
+⏳ Frontend: pantalla de inicio pendiente
+⏳ IDs hardcodeados: endpoints listos, falta conectar al frontend
 
 ### Pendientes identificados
 
 #### Prioridad alta
+- Construir pantalla de inicio en frontend con:
+  - `<select>` de profesional cargado desde `GET /api/profesionales`
+  - Campo de búsqueda de PCD por documento
+  - Llamada automática a `GET /api/ciclos/activo/:pcdId`
+  - Con esos IDs reales, abrir el formulario de tamizaje
 
-- Eliminar IDs de prueba (hardcoded):
-  - cicloId = db78b3bd-279e-42eb-a41f-f71392e9a517
-  - profesionalId = 6b0fccdd-08a2-474a-b96e-cc3470a928ab
-- Crear flujo real:
-  - Registrar PCD
-  - Crear ciclo
-  - Buscar PCD
-  - Obtener ciclo activo
-  - Realizar evaluación
-  - Guardar tamizaje
+#### Prioridad media
+- Implementar login con JWT + bcrypt
+- Crear formulario de registro de nueva PCD
 
 #### Mejoras futuras
+- Módulo PPA
+- Reportes estadísticos por tipo de discapacidad, localidad, nivel de apoyo
 
-- Evaluar almacenar también:
-  - sumaGeneral
-  - porcentajeGeneral
-  - calculoGeneral
-- Diseñar módulo de reportes estadísticos por:
-  - tipo de discapacidad
-  - localidad
-  - sexo
-  - diagnóstico
-  - nivel de apoyo
+### Commits sugeridos
+- `feat: agregar endpoints profesionales, búsqueda PCD y ciclo activo`
+- `docs: crear diario técnico y actualizar CONTEXT.md`
 
-### Commits realizados
+---
 
-- Validación completa backend tamizaje
-- Integración frontend tamizaje con backend
-
-## 11. Preguntas o dudas abiertas
+## 12. Preguntas o dudas abiertas
 
 - [ ] ¿Base de datos en la nube desde el inicio o local primero?
 - [ ] ¿El formato Word necesita página 3 completa (texto legal + firma)?
 - [ ] ¿El estudio de caso va dentro del módulo PPA o es un módulo separado?
-- [ ] ¿Cómo manejar el PPC (Plan Personalizado de Cuidado) para niveles extenso/generalizado vs PPA?
+- [ ] ¿Cómo manejar el PPC para niveles extenso/generalizado vs PPA?
 - [X] Definir schema completo de Prisma antes de construir el backend
 
 ---
 
-## 12. Decisiones técnicas aprendidas en sesión
+## 13. Decisiones técnicas aprendidas en sesión
 
 | Decisión | Razón |
 |----------|-------|
-| Prisma 5.22.0 (no v6 ni v7) | Prisma 7 es incompatible con Node 22 — genera errores de construcción del cliente |
-| CommonJS (`require`/`module.exports`) en todo el backend | ESM (`import`/`export`) con Prisma 5 en Node 22 causa conflictos de resolución de módulos |
-| Sin `"type": "module"` en package.json | Necesario para que CommonJS funcione correctamente |
-| `prisma.config.ts` renombrado a `.bak` | Cuando está activo interfiere con la generación del cliente Prisma |
-| `url = env("DATABASE_URL")` obligatorio en `datasource db` del schema | Sin esta línea Prisma 5 no valida ni genera el cliente |
-| `npx prisma generate --schema=./prisma/schema.prisma` | Siempre apuntar al schema explícitamente — sin la flag no lo encuentra |
-| Correr comandos npm/npx siempre desde `backend/` | Desde la raíz del proyecto los scripts no existen y los paths fallan |
-| Usar terminal integrado de VS Code, no PowerShell externo | PowerShell externo no reconoce comandos Unix (`rmdir /s /q`) y es más lento |
+| Prisma 5.22.0 (no v6 ni v7) | Prisma 7 es incompatible con Node 22 |
+| CommonJS en todo el backend | ESM con Prisma 5 en Node 22 causa conflictos |
+| Sin `"type": "module"` en package.json | Necesario para que CommonJS funcione |
+| `prisma.config.ts` renombrado a `.bak` | Interfiere con la generación del cliente Prisma |
+| `url = env("DATABASE_URL")` obligatorio en schema | Sin esta línea Prisma 5 no valida ni genera el cliente |
+| Correr comandos npm/npx siempre desde `backend/` | Desde la raíz los scripts no existen |
+| Rutas específicas antes que rutas con parámetros | Express lee en orden — `/buscar` antes de `/:id` |
+| `select` en Prisma para no exponer `password` | Buena práctica de seguridad desde el inicio |
 
 *Actualizado por:* Jeisson Rangel
 *Proyecto iniciado:* 2026
