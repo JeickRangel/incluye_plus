@@ -3,6 +3,8 @@ const express = require('express')
 const cors = require('cors')
 const pcdRoutes = require('./routes/pcd.routes')
 const tamizajeRoutes = require('./routes/tamizaje.routes')
+const profesionalRoutes = require('./routes/profesional.routes')
+const cicloRoutes       = require('./routes/ciclo.routes')
 
 const app = express()
 const PORT = process.env.PORT || 3000
@@ -14,6 +16,9 @@ app.use((req, _res, next) => {
   console.log(`${req.method} ${req.url}`)
   next()
 })
+
+app.use('/api/profesionales', profesionalRoutes)
+app.use('/api/ciclos', cicloRoutes)
 
 app.use('/api/pcd', pcdRoutes)
 app.use('/api/tamizaje', tamizajeRoutes)
