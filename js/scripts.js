@@ -137,6 +137,39 @@ async function buscarPcdPorNombre(req, res) {
 }
 
     // =========================
+    // CARGAR PROFESIONALES (select al finalizar)
+    // =========================
+    let profesionalesEncontrados = [];
+
+    async function cargarProfesionales() {
+        const select = document.getElementById("selectProfesional");
+        try {
+            const resp = await fetch(`http://localhost:3000/api/profesionales?entidadId=${ENTIDAD_ID}`);
+            const data = await resp.json();
+            profesionalesEncontrados = data.data;
+
+            select.innerHTML = '<option value="">Seleccione...</option>';
+            profesionalesEncontrados.forEach(p => {
+                const opt = document.createElement("option");
+                opt.value = p.id;
+                opt.textContent = p.nombre;
+                select.appendChild(opt);
+            });
+        } catch (err) {
+            select.innerHTML = '<option value="">Error al cargar</option>';
+            console.error("Error cargando profesionales:", err);
+        }
+    }
+
+    document.getElementById("selectProfesional")?.addEventListener("change", (e) => {
+        const seleccionado = profesionalesEncontrados.find(p => p.id === e.target.value);
+        if (!seleccionado) return;
+
+        document.getElementById("cargoProfesional").value = seleccionado.disciplina;
+        profesionalSeleccionadoId = seleccionado.id;
+    });
+
+    // =========================
     // RENDERIZAR PREGUNTA
     // =========================
     function renderizarPregunta() {
@@ -420,6 +453,9 @@ async function buscarPcdPorNombre(req, res) {
  
         document.getElementById("card-profesional").style.display   = "block";
         document.getElementById("contenedor-botones").style.display = "flex";
+        document.getElementById("card-profesional").style.display   = "block";
+        document.getElementById("contenedor-botones").style.display = "flex";
+        cargarProfesionales();
     }  // <-- nuevo
  
     //Prueba de sesion↓

@@ -38,33 +38,38 @@
              PANTALLA 1: INICIO — datos de la persona
         ================================================ -->
 
-<div id="pantalla-inicio" class="pantalla">
+<div id="pantalla-inicio" class="pantalla container-fluid py-4">
 <p id="mensajePcd"></p>
 
-                        <div class="card mb-4">
-                            <label class="form-label">Fecha</label>
-                            <input type="date" id="fecha" class="form-control">
-                        </div>
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Datos de la persona a evaluar</h5>
+            <div class="row g-3">
 
-                        <div class="col-md-4">
-                            <label class="form-label">Nombre completo</label>
-                            <input type="text" id="nombre" class="form-control" list="listaPcds" placeholder="Nombre completo" autocomplete="off">
-                            <datalist id="listaPcds"></datalist>
-                        </div>
-
-                        <div class="col-md-4">
-                            <label class="form-label">Documento de identificación</label>
-                            <input type="text" id="documento" class="form-control" placeholder="Número de documento">
-                        </div>
-
-                    </div>
-
-                    <div class="mt-3">
-                        <button id="btnIniciar" class="btn btn-primary">Iniciar evaluación →</button>
-                    </div>
+                <div class="col-md-4">
+                    <label class="form-label">Fecha</label>
+                    <input type="date" id="fecha" class="form-control">
                 </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Nombre completo</label>
+                    <input type="text" id="nombre" class="form-control" list="listaPcds" placeholder="Nombre completo" autocomplete="off">
+                    <datalist id="listaPcds"></datalist>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Documento de identificación</label>
+                    <input type="text" id="documento" class="form-control" placeholder="Número de documento">
+                </div>
+
             </div>
-            </div> <!-- cierra pantalla-inicio -->
+
+            <div class="mt-3">
+                <button id="btnIniciar" class="btn btn-primary">Iniciar evaluación →</button>
+            </div>
+        </div>
+    </div>
+</div> <!-- cierra pantalla-inicio -->
 
         <!-- ================================================
              PANTALLA 2: EVALUACIÓN — dos columnas
