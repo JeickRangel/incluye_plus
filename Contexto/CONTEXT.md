@@ -152,6 +152,8 @@ Ingreso PCD → Sistema de apoyos → Estudio de caso → PPA → Sesiones → S
 - [x] Backend Express + PostgreSQL + Prisma funcionando
 - [x] POST /api/tamizaje guardando en BD
 - [ ] Eliminar IDs hardcodeados — endpoints listos, falta pantalla de inicio en frontend
+- [x] Pantalla de inicio conectada a BD: búsqueda de PCD por nombre (datalist en vivo), autocompleta documento y ciclo activo
+- [x] Card de profesional conectada a BD: select de profesionales, autocompleta cargo (disciplina)
 
 ### Módulo 2 — PPA / Plan Personalizado de Apoyo 🔲 Siguiente
 ### Módulo 3 — Sesiones e intervención 🔲 Fase 2
