@@ -7,6 +7,13 @@ window.addEventListener("DOMContentLoaded", () => {
     const barraProgreso     = document.getElementById("barraProgreso");
     const categoriaActual   = document.getElementById("categoriaActual");
     const resultadoFinal    = document.getElementById("resultado-final");
+    // ID temporal de la entidad — luego vendrá del login (JWT)
+    const ENTIDAD_ID = "4eb51e92-cdcd-4918-b416-4a07ab35c12d";
+
+    // Variables globales para guardar los datos seleccionados en pantalla 0
+    let profesionalSeleccionadoId = null;
+    let pcdSeleccionadaId = null;
+    let cicloActivoId = null;
  
     let indiceActual = 0;
     let respuestas   = [];
@@ -71,6 +78,64 @@ window.addEventListener("DOMContentLoaded", () => {
         document.getElementById("pantalla-resultado").style.display  = "block";
     }
  
+    // =========================
+    // BUSCAR PCD POR NOMBRE (en vivo, datalist)
+    // =========================
+    let pcdsEncontrados = [];
+
+    document.getElementById("nombre")?.addEventListener("input", async (e) => {
+        const texto = e.target.value.trim();
+        const lista = document.getElementById("listaPcds");
+
+        if (texto.length === 0) {
+            lista.innerHTML = "";
+            pcdsEncontrados = [];
+            return;
+        }
+
+        try {
+            const resp = await fetch(`http://localhost:3000/api/pcd/buscar-nombre?nombre=${encodeURIComponent(texto)}&entidadId=${ENTIDAD_ID}`);
+            const data = await resp.json();
+            pcdsEncontrados = data.data;
+
+            lista.innerHTML = pcdsEncontrados
+                .map(p => `<option value="${p.nombre}">${p.nombre} — Doc: ${p.documento}</option>`)
+                .join("");
+        } catch (err) {
+            console.error("Error buscando PCD por nombre:", err);
+        }
+    });
+
+    document.getElementById("nombre")?.addEventListener("change", (e) => {
+        const seleccionado = pcdsEncontrados.find(p => p.nombre === e.target.value);
+        if (!seleccionado) return;
+
+        document.getElementById("documento").value = seleccionado.documento;
+        pcdSeleccionadaId = seleccionado.id;
+        cicloActivoId = seleccionado.cicloActivo ? seleccionado.cicloActivo.id : null;
+
+        if (!cicloActivoId) {
+            console.warn("Esta PCD no tiene ciclo activo (EN_CURSO).");
+        }
+    });
+
+    // Busca PCDs cuyo nombre contenga el texto (ignora mayúsculas/minúsculas)
+async function buscarPcdPorNombre(req, res) {
+  const { nombre, entidadId } = req.query;
+  try {
+    const pcds = await prisma.pcd.findMany({
+      where: {
+        entidadId,
+        nombre: { contains: nombre, mode: 'insensitive' }
+      },
+      select: { id: true, nombre: true, documento: true }
+    });
+    res.json({ data: pcds });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
     // =========================
     // RENDERIZAR PREGUNTA
     // =========================
@@ -355,7 +420,7 @@ window.addEventListener("DOMContentLoaded", () => {
  
         document.getElementById("card-profesional").style.display   = "block";
         document.getElementById("contenedor-botones").style.display = "flex";
-    }
+    }  // <-- nuevo
  
     //Prueba de sesion↓
     async function guardarTamizajeBackend(payload) {

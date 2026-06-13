@@ -37,24 +37,19 @@
         <!-- ================================================
              PANTALLA 1: INICIO — datos de la persona
         ================================================ -->
-        <div id="pantalla-inicio" class="pantalla container-fluid py-4">
 
-            <h1 class="mt-2">Sistema de apoyos</h1>
-            <p class="text-muted">Herramienta digital para facilitar la calificación del sistema de apoyos.</p>
+<div id="pantalla-inicio" class="pantalla">
+<p id="mensajePcd"></p>
 
-            <div class="card mb-4">
-                <div class="card-body">
-                    <h5 class="card-title">Datos de la persona a evaluar</h5>
-                    <div class="row g-3">
-
-                        <div class="col-md-4">
+                        <div class="card mb-4">
                             <label class="form-label">Fecha</label>
                             <input type="date" id="fecha" class="form-control">
                         </div>
 
                         <div class="col-md-4">
                             <label class="form-label">Nombre completo</label>
-                            <input type="text" id="nombre" class="form-control" placeholder="Nombre completo">
+                            <input type="text" id="nombre" class="form-control" list="listaPcds" placeholder="Nombre completo" autocomplete="off">
+                            <datalist id="listaPcds"></datalist>
                         </div>
 
                         <div class="col-md-4">
@@ -69,8 +64,7 @@
                     </div>
                 </div>
             </div>
-
-        </div>
+            </div> <!-- cierra pantalla-inicio -->
 
         <!-- ================================================
              PANTALLA 2: EVALUACIÓN — dos columnas
@@ -119,7 +113,7 @@
 
                         <div class="col-md-6">
                             <label class="form-label">Nombre del profesional</label>
-                            <input type="text" id="nombreProfesional" class="form-control" placeholder="Nombre completo">
+                            <select id="selectProfesional" class="form-control"></select>
                         </div>
 
                         <div class="col-md-6">

@@ -100,4 +100,38 @@ async function buscarPcdPorDocumento(req, res) {
 }
 
 // Actualizar el module.exports
-module.exports = { crearPcd, obtenerPcd, buscarPcdPorDocumento }
+module.exports = { crearPcd, obtenerPcd, buscarPcdPorDocumento, buscarPcdPorNombre }
+
+async function buscarPcdPorNombre(req, res) {
+  const { nombre, entidadId } = req.query
+
+  if (!nombre || !entidadId) {
+    return res.status(400).json({ error: 'Faltan parámetros: nombre y entidadId son requeridos' })
+  }
+
+  try {
+    const pcds = await prisma.pcd.findMany({
+      where: {
+        entidadId,
+        nombre: { contains: nombre, mode: 'insensitive' }
+      },
+      include: {
+        ciclos: {
+          where: { estado: 'EN_CURSO' },
+          orderBy: { anio: 'desc' },
+          take: 1
+        }
+      }
+    })
+
+    const data = pcds.map(({ ciclos, ...pcd }) => ({
+      ...pcd,
+      cicloActivo: ciclos[0] ?? null
+    }))
+
+    return res.json({ data })
+  } catch (error) {
+    console.error('[buscarPcdPorNombre]', error)
+    return res.status(500).json({ error: 'No se pudo buscar la PCD' })
+  }
+}
