@@ -151,9 +151,10 @@ Ingreso PCD → Sistema de apoyos → Estudio de caso → PPA → Sesiones → S
 - [x] Validación de campos obligatorios
 - [x] Backend Express + PostgreSQL + Prisma funcionando
 - [x] POST /api/tamizaje guardando en BD
-- [ ] Eliminar IDs hardcodeados — endpoints listos, falta pantalla de inicio en frontend
-- [x] Pantalla de inicio conectada a BD: búsqueda de PCD por nombre (datalist en vivo), autocompleta documento y ciclo activo
-- [x] Card de profesional conectada a BD: select de profesionales, autocompleta cargo (disciplina)
+- [x] Pantalla de inicio conectada a BD: búsqueda de PCD por nombre (datalist en vivo)
+- [x] Card de profesional conectada a BD: select de profesionales, autocompleta cargo
+- [x] IDs dinámicos: cicloActivoId y profesionalSeleccionadoId reemplazaron hardcodeados
+- [x] nivelApoyoGeneral acepta equivalencia 0-4 (incluye APOYO GENERALIZADO)
 
 ### Módulo 2 — PPA / Plan Personalizado de Apoyo 🔲 Siguiente
 ### Módulo 3 — Sesiones e intervención 🔲 Fase 2
@@ -173,6 +174,7 @@ Ingreso PCD → Sistema de apoyos → Estudio de caso → PPA → Sesiones → S
 | GET | `/api/profesionales?entidadId=X` | Lista profesionales de una entidad | ✅ nuevo |
 | GET | `/api/ciclos/activo/:pcdId` | Obtiene o crea el ciclo activo del año | ✅ nuevo |
 | GET | `/api/health` | Verifica que el servidor está activo | ✅ |
+| GET | /api/pcd/buscar-nombre?nombre=X&entidadId=X | Busca PCDs por nombre (parcial, insensible a mayúsculas) | ✅ nuevo |
 
 ---
 
@@ -265,53 +267,34 @@ Ingreso PCD → Sistema de apoyos → Estudio de caso → PPA → Sesiones → S
 | `select` en queries de profesionales | No exponer el campo `password` en respuestas de la API |
 | Patrón "obtener o crear" en ciclo activo | El frontend no necesita saber si el ciclo ya existía |
 | API-first: backend antes que frontend | El frontend necesita datos reales para probarse |
-
+| contains + mode: insensitive en Prisma para búsqueda por nombre | Permite encontrar coincidencias parciales sin importar mayúsculas |
+| <datalist> en vez de dropdown custom | Más simple, autocompletado nativo del navegador |
 ---
 
 ## 11. Sesión actual
 
-**Fecha:** 9 de junio de 2026
+**Fecha:** 16 de junio de 2026
 
 ### Objetivo de la sesión
-Construir los endpoints necesarios para eliminar los IDs hardcodeados del módulo de tamizaje.
+Reemplazar los IDs hardcodeados en el payload del tamizaje con variables dinámicas reales.
 
 ### Lo que se hizo
-- Se crearon 3 endpoints nuevos en el backend: `GET /api/profesionales`, `GET /api/pcd/buscar`, `GET /api/ciclos/activo/:pcdId`
-- Se insertaron datos de prueba en PostgreSQL con Prisma Studio (Entidad, Profesional, PCD)
-- Se probaron los tres endpoints con Thunder Client — todos respondieron 200 OK
-- Se creó el diario técnico del proyecto (`diario_tecnico_incluye_plus.md`)
-- Se actualizaron CONTEXT.md y diario técnico para commit a Git
+- Reemplazado cicloId hardcodeado por cicloActivoId
+- Reemplazado profesionalId hardcodeado por profesionalSeleccionadoId
+- Agregada variable profesionalSeleccionadoNombre (scope global)
+- Corregido bug: profesionalId usaba pcdSeleccionadaId por error de tipeo
+- Corregido bug: nivelApoyoGeneral solo aceptaba 0-3, ahora acepta 0-4
+- Corregido bug: btnGuardar y btnExportarWord leían campo nombreProfesional inexistente
+- Eliminados console.log temporales de prueba
 
 ### Estado actual
-
-✅ Backend con 6 endpoints funcionales
-✅ PostgreSQL con datos de prueba reales
-✅ Diario técnico iniciado
-⏳ Frontend: pantalla de inicio pendiente
-⏳ IDs hardcodeados: endpoints listos, falta conectar al frontend
+✅ Módulo 1 completamente funcional end-to-end
+✅ Tamizaje se guarda en BD con ciclo y profesional correctos
+✅ Exportar Word funciona correctamente
 
 ### Pendientes identificados
-
-#### Prioridad alta
-- Construir pantalla de inicio en frontend con:
-  - `<select>` de profesional cargado desde `GET /api/profesionales`
-  - Campo de búsqueda de PCD por documento
-  - Llamada automática a `GET /api/ciclos/activo/:pcdId`
-  - Con esos IDs reales, abrir el formulario de tamizaje
-
-#### Prioridad media
-- Implementar login con JWT + bcrypt
-- Crear formulario de registro de nueva PCD
-
-#### Mejoras futuras
-- Módulo PPA
-- Reportes estadísticos por tipo de discapacidad, localidad, nivel de apoyo
-
-### Commits sugeridos
-- `feat: agregar endpoints profesionales, búsqueda PCD y ciclo activo`
-- `docs: crear diario técnico y actualizar CONTEXT.md`
-
----
+- Manejar el caso "PCD no existe" (formulario de registro de nueva PCD)
+- Módulo 2 — PPA (siguiente módulo)
 
 ## 12. Preguntas o dudas abiertas
 

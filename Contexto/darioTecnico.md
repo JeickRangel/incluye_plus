@@ -288,6 +288,71 @@ Construir los endpoints del backend necesarios para eliminar los IDs hardcodeado
 - Se probaron los tres endpoints con Thunder Client y los tres respondieron 200 OK.
 - Se creó el diario técnico del proyecto como archivo `.md` con sesiones reconstruidas desde el inicio.
 
+## Sesión 7 — 12 de junio de 2026
+
+### 🎯 Objetivo de la sesión
+Conectar la pantalla de inicio con la base de datos (búsqueda de PCD por nombre, carga de profesionales) y corregir el layout CSS.
+
+### ✅ Lo que se hizo
+- Se creó `buscarPcdPorNombre()` en el backend usando `contains` + `mode: insensitive`.
+- Se registró la ruta GET /api/pcd/buscar-nombre.
+- Se implementó búsqueda en vivo con <datalist> en el campo "Nombre completo".
+- Se creó `cargarProfesionales()` y se conectó al select de la card final.
+- Se autocompleta el campo "Cargo" con la disciplina del profesional.
+- Se corrigió la estructura HTML de pantalla-inicio (faltaba el div contenedor).
+- Se reestructuró el CSS de esa pantalla con card/card-body/row/col-md-4.
+
+### 🐛 Problemas encontrados y soluciones
+
+| Problema | Causa raíz | Solución |
+|----------|-----------|----------|
+| `router is not defined` en controller | Línea de ruta pegada en el archivo equivocado (controller en vez de routes) | Mover la línea a pcd.routes.js |
+| `pcdController is not defined` | Se usó pcdController.algo pero el patrón del proyecto importa funciones directo | Cambiar a import directo `{ buscarPcdPorNombre }` |
+| `Identifier 'crearPcd' has already been declared` | Quedaron dos líneas `require` duplicadas en pcd.routes.js | Eliminar la línea duplicada, dejar solo un require |
+| `Cannot read properties of null (reading 'style')` | Faltaba `<div id="pantalla-inicio">` en el HTML | Agregar el div contenedor con su cierre correspondiente |
+| Layout "a lo ancho" / feo | Faltaba .card > .card-body > .row.g-3 > .col-md-4 alrededor de los inputs | Reestructurar el HTML con esas clases |
+| "message channel closed" en consola | Error de extensión del navegador, no del código | Ignorar — no es un error del proyecto |
+
+### 🧠 Conceptos aprendidos
+
+**¿Qué es `contains` + `mode: insensitive` en Prisma?**
+`contains` busca coincidencias parciales (no exactas) dentro de un texto. `mode: insensitive` hace que no importe si escribes mayúsculas o minúsculas. Juntos permiten que escribir "wei" encuentre "Weiny".
+
+**¿Qué es `<datalist>`?**
+Es un elemento HTML nativo que conecta con un `<input>` mediante el atributo `list`, mostrando sugerencias mientras el usuario escribe — sin necesidad de armar un dropdown personalizado con CSS/JS.
+
+**Diferencia entre eventos `input` y `change`:**
+`input` se dispara con cada tecla presionada (ideal para búsqueda en vivo). `change` se dispara solo cuando el valor se "confirma" (por ejemplo, al elegir una opción del datalist o al salir del campo).
+
+**`encodeURIComponent()`:**
+Convierte caracteres especiales (espacios, tildes, ñ) a un formato seguro para usar en URLs. Necesario al enviar nombres con espacios o acentos como parámetro de búsqueda.
+
+**Patrón `find()` para relacionar datos guardados:**
+Cuando guardamos una lista completa en una variable (como `profesionalesEncontrados`), podemos usar `.find()` para recuperar el objeto completo a partir de un id seleccionado, y así acceder a otros campos (como `disciplina`) sin hacer una nueva petición al servidor.
+
+### 📌 Estado al cerrar la sesión
+✅ Búsqueda de PCD por nombre con autocompletado funcionando
+✅ Carga de profesionales y autocompletado de cargo funcionando
+✅ Layout de pantalla de inicio corregido
+⏳ IDs hardcodeados aún pendientes de reemplazar en el payload del tamizaje
+
+### ⏭️ Próximo paso
+Reemplazar los IDs hardcodeados (cicloId, profesionalId) en el payload de guardarTamizajeBackend con las variables reales: pcdSeleccionadaId, cicloActivoId, profesionalSeleccionadoId.
+
+---
+
+## 📖 Lecciones aprendidas — Cómo leer errores (guía de referencia)
+
+| Tipo de error | Qué significa | Dónde mirar |
+|---|---|---|
+| `ReferenceError: X is not defined` | Usaste X pero no se declaró/importó en ese archivo | Revisa require/import y que el nombre coincida exactamente |
+| `SyntaxError` | Algo en la estructura del código está mal (paréntesis, comas, duplicados) | Mira la línea exacta indicada |
+| `TypeError: Cannot read properties of null` | Buscaste un elemento HTML que no existe en la página | Revisa que el id exista en el HTML, sin errores de tipeo |
+| `ERR_CONNECTION_REFUSED` | El backend no está corriendo o se cayó | Revisa la terminal del backend |
+| `404` | La ruta existe pero la URL no coincide | Revisa el archivo .routes.js, orden y nombres |
+| `500` | El servidor recibió la petición pero falló al procesarla | Revisa console.error en la terminal del backend |
+| "message channel closed" / errores de `chrome-extension://` | Vienen de extensiones del navegador, no del proyecto | Ignorar |
+
 ### 🐛 Problemas encontrados y soluciones
 
 | Problema | Causa raíz | Solución aplicada |
@@ -333,7 +398,47 @@ Construir la pantalla de inicio del frontend que use los tres endpoints nuevos p
 4. Con esos datos reales, abrir el formulario de tamizaje sin IDs hardcodeados
 
 ---
+## Sesión 8 — 16 de junio de 2026
 
+### 🎯 Objetivo de la sesión
+Reemplazar los IDs hardcodeados en el payload del tamizaje con variables dinámicas reales.
+
+### ✅ Lo que se hizo
+- Reemplazado `cicloId: "uuid-fijo"` por `cicloId: cicloActivoId`
+- Reemplazado `profesionalId: "uuid-fijo"` por `profesionalId: profesionalSeleccionadoId`
+- Agregada variable global `profesionalSeleccionadoNombre`
+- Corregido `nivelApoyoGeneral` para aceptar equivalencia 0-4
+- Corregido `btnGuardar` y `btnExportarWord` que leían input inexistente
+- Corregido bug: `profesionalId` usaba `pcdSeleccionadaId` por error de tipeo en el payload
+
+### 🐛 Problemas encontrados y soluciones
+
+| Problema | Causa raíz | Solución |
+|----------|-----------|----------|
+| "Ciclo no encontrado" | cicloId llegaba como string "cicloActivoId" con comillas | Quitar comillas — usar variable, no texto |
+| "Profesional no encontrado" | payload usaba `pcdSeleccionadaId` en lugar de `profesionalSeleccionadoId` | Corregir nombre de variable en el payload |
+| btnGuardar no encontraba nombreProfesional | El input fue reemplazado por un select, pero el código seguía buscando el input viejo | Leer `profesionalSeleccionadoNombre` en lugar del input |
+| nivelApoyoGeneral rechazaba valor 4 | Validación solo incluía `[0,1,2,3]` | Agregar 4 a la validación — APOYO GENERALIZADO es equivalencia 4 |
+| profesionalSeleccionadoNombre no disponible en btnGuardar | Variable declarada dentro del evento change — moría al terminar el evento | Declarar en scope global junto a las otras variables |
+
+### 🧠 Conceptos aprendidos
+
+**¿Qué es el scope?**
+El scope (alcance) define dónde vive una variable. Una variable declarada dentro de un evento `{}` solo existe mientras ese evento se ejecuta. Si otro evento necesita ese valor, la variable debe declararse afuera, en un scope compartido.
+
+**Diferencia entre un string y una variable:**
+`"cicloActivoId"` es texto literal — siempre vale eso. `cicloActivoId` es una variable — vale lo que se le haya asignado. Las comillas son la diferencia entre mandar el nombre y mandar el valor.
+
+**¿Por qué usar console.log con JSON.stringify?**
+`console.log("obj:", objeto)` muestra `Object` — hay que hacer clic para expandir. `JSON.stringify(objeto)` convierte el objeto a texto plano visible de inmediato, lo que acelera la depuración.
+
+### 📌 Estado al cerrar la sesión
+✅ Módulo 1 completamente funcional end-to-end
+✅ Tamizaje guardado en BD con IDs correctos
+✅ Exportar Word funcionando
+
+### ⏭️ Próximo paso
+Construir el formulario de registro de nueva PCD (caso "PCD no existe") y comenzar Módulo 2 — PPA.
 ---
 
 ## 📚 Glosario técnico del proyecto

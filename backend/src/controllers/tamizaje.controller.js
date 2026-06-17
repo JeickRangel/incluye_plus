@@ -7,7 +7,7 @@ async function crearTamizaje(req, res) {
   const faltantes = Object.entries(requeridos).filter(([, v]) => v === undefined || v === null || v === '').map(([k]) => k)
   if (faltantes.length > 0) return res.status(400).json({ error: 'Faltan campos requeridos', campos: faltantes })
 
-  if (![0, 1, 2, 3].includes(Number(nivelApoyoGeneral))) return res.status(400).json({ error: 'nivelApoyoGeneral debe ser 0, 1, 2 o 3' })
+  if (![0, 1, 2, 3, 4].includes(Number(nivelApoyoGeneral))) return res.status(400).json({ error: 'nivelApoyoGeneral debe ser 0, 1, 2 o 3' })
 
   try {
     const ciclo = await prisma.ciclo.findUnique({ where: { id: cicloId } })

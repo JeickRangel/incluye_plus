@@ -14,7 +14,7 @@ window.addEventListener("DOMContentLoaded", () => {
     let profesionalSeleccionadoId = null;
     let pcdSeleccionadaId = null;
     let cicloActivoId = null;
- 
+    let profesionalSeleccionadoNombre = null; // ← agregar esto
     let indiceActual = 0;
     let respuestas   = [];
  
@@ -114,6 +114,8 @@ window.addEventListener("DOMContentLoaded", () => {
         pcdSeleccionadaId = seleccionado.id;
         cicloActivoId = seleccionado.cicloActivo ? seleccionado.cicloActivo.id : null;
 
+        console.log("cicloActivoId:", cicloActivoId);    
+
         if (!cicloActivoId) {
             console.warn("Esta PCD no tiene ciclo activo (EN_CURSO).");
         }
@@ -147,6 +149,7 @@ async function buscarPcdPorNombre(req, res) {
             const resp = await fetch(`http://localhost:3000/api/profesionales?entidadId=${ENTIDAD_ID}`);
             const data = await resp.json();
             profesionalesEncontrados = data.data;
+            console.log("Profesionales cargados:", JSON.stringify(profesionalesEncontrados));
 
             select.innerHTML = '<option value="">Seleccione...</option>';
             profesionalesEncontrados.forEach(p => {
@@ -167,6 +170,7 @@ async function buscarPcdPorNombre(req, res) {
 
         document.getElementById("cargoProfesional").value = seleccionado.disciplina;
         profesionalSeleccionadoId = seleccionado.id;
+        profesionalSeleccionadoNombre = seleccionado.nombre;
     });
 
     // =========================
@@ -488,7 +492,7 @@ async function buscarPcdPorNombre(req, res) {
     // GUARDAR EVALUACIÓN
     // =========================
     document.getElementById("btnGuardar")?.addEventListener("click", async () => {
-        const nombreProf = document.getElementById("nombreProfesional").value.trim();
+        const nombreProf = profesionalSeleccionadoNombre || "";
         const cargo      = document.getElementById("cargoProfesional").value.trim();
         const concepto   = document.getElementById("conceptoTecnico").value.trim();
  
@@ -503,9 +507,9 @@ async function buscarPcdPorNombre(req, res) {
         //prueba sesion ↓
         const payload = {
 
-        cicloId: "db78b3bd-279e-42eb-a41f-f71392e9a517",
+        cicloId: cicloActivoId,
 
-        profesionalId: "6b0fccdd-08a2-474a-b96e-cc3470a928ab",
+        profesionalId: profesionalSeleccionadoId,
 
         nivelApoyoGeneral: rg.equivalenciaGeneral,
 
@@ -515,6 +519,7 @@ async function buscarPcdPorNombre(req, res) {
 
         resultadosCategoria: rc
         };
+
         //↑
         //Aqui tambien ↓
         try {
@@ -577,7 +582,7 @@ async function buscarPcdPorNombre(req, res) {
     // EXPORTAR WORD
     // =========================
     document.getElementById("btnExportarWord")?.addEventListener("click", async () => {
-        const nombreProf = document.getElementById("nombreProfesional").value.trim();
+        const nombreProf = profesionalSeleccionadoNombre || "";
         const cargo      = document.getElementById("cargoProfesional").value.trim();
         const concepto   = document.getElementById("conceptoTecnico").value.trim();
  
