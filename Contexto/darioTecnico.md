@@ -474,5 +474,35 @@ Construir el formulario de registro de nueva PCD (caso "PCD no existe") y comenz
 
 ---
 
+## Sesión 9 — 17 de junio de 2026
+
+### 🎯 Objetivo
+Construir el formulario de registro de nueva PCD.
+
+### ✅ Lo que se hizo
+- Diseñada estructura de dos tablas: Pcd (identidad) + FichaPcd (caracterización)
+- Schema de Prisma actualizado y migración aplicada
+- pcd.controller.js reescrito sin IDs hardcodeados ni module.exports duplicado
+- POST /api/pcd crea PCD + FichaPcd + Ciclo en una sola transacción
+- index.html corregido: estaba duplicado, pantalla-registro ahora es pantalla independiente
+
+### 🐛 Problemas encontrados
+| Problema | Causa | Solución |
+|----------|-------|----------|
+| Error P1012 en migración | FichaPcd referenciada antes de existir en el schema | El modelo ya estaba — era problema de entorno |
+| Migración fallaba con 2 filas existentes | Columnas nuevas NOT NULL sin default | Editar migration.sql manualmente agregando DEFAULT |
+| EPERM al generar cliente Prisma | Archivo bloqueado por Windows | Cerrar y reabrir VS Code |
+| index.html duplicado | Se pegó el contenido dos veces | Reemplazar con archivo limpio |
+
+### 🧠 Conceptos aprendidos
+- Una migración se puede editar manualmente antes de aplicarse usando --create-only
+- DEFAULT en SQL permite agregar columnas NOT NULL a tablas con datos existentes
+- Las pantallas deben tener class="pantalla" para que el JS las pueda mostrar/ocultar
+
+### ⏭️ Próximo paso
+1. Secciones 2 a 7 del formulario HTML (datos socioeconómicos, discapacidad, sistema de apoyos, cuidado, conducta, referente familiar)
+2. JavaScript para recoger todos los campos y hacer POST /api/pcd
+3. Botón en pantalla-inicio que lleve a pantalla-registro cuando la PCD no existe
+
 *Proyecto iniciado: 2026 — Autor: Jeisson Rangel*
 *Actualizar al finalizar cada sesión de trabajo.*

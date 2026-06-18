@@ -155,6 +155,7 @@ Ingreso PCD → Sistema de apoyos → Estudio de caso → PPA → Sesiones → S
 - [x] Card de profesional conectada a BD: select de profesionales, autocompleta cargo
 - [x] IDs dinámicos: cicloActivoId y profesionalSeleccionadoId reemplazaron hardcodeados
 - [x] nivelApoyoGeneral acepta equivalencia 0-4 (incluye APOYO GENERALIZADO)
+- [x] Formulario de registro de nueva PCD — backend completo
 
 ### Módulo 2 — PPA / Plan Personalizado de Apoyo 🔲 Siguiente
 ### Módulo 3 — Sesiones e intervención 🔲 Fase 2
@@ -175,6 +176,7 @@ Ingreso PCD → Sistema de apoyos → Estudio de caso → PPA → Sesiones → S
 | GET | `/api/ciclos/activo/:pcdId` | Obtiene o crea el ciclo activo del año | ✅ nuevo |
 | GET | `/api/health` | Verifica que el servidor está activo | ✅ |
 | GET | /api/pcd/buscar-nombre?nombre=X&entidadId=X | Busca PCDs por nombre (parcial, insensible a mayúsculas) | ✅ nuevo |
+| POST | `/api/pcd` | Crea PCD + FichaPcd + Ciclo en transacción | ✅ actualizado |
 
 ---
 
@@ -194,6 +196,7 @@ Ingreso PCD → Sistema de apoyos → Estudio de caso → PPA → Sesiones → S
 | `sesion`              | Evento de intervención grup o ind | Pertenece a profesional y entidad |
 | `registro_sesion`     | Lo que le pasó a cada PCD en la sesión | Conecta sesión + PCD + ciclo |
 | `objetivo_trabajado`  | Qué objetivos del PPA se abordaron en una sesión | Tabla puente muchos a muchos |
+| `ficha_pcd` | Caracterización completa de la PCD | Relación 1 a 1 con pcd |
 
 ### Decisiones de diseño de BD
 - Todas las tablas principales tienen `entidad_id` para soportar multi-tenant futuro
@@ -269,32 +272,30 @@ Ingreso PCD → Sistema de apoyos → Estudio de caso → PPA → Sesiones → S
 | API-first: backend antes que frontend | El frontend necesita datos reales para probarse |
 | contains + mode: insensitive en Prisma para búsqueda por nombre | Permite encontrar coincidencias parciales sin importar mayúsculas |
 | <datalist> en vez de dropdown custom | Más simple, autocompletado nativo del navegador |
+| `profesionalSeleccionadoNombre` declarado en scope global | Necesario para que btnGuardar y btnExportarWord puedan leerlo — variables dentro de un evento no sobreviven fuera de él |
+| nivelApoyoGeneral acepta 0-4 | La equivalencia numérica incluye APOYO GENERALIZADO (4), distinto de los puntajes de preguntas (0-3) |
 ---
 
 ## 11. Sesión actual
 
-**Fecha:** 16 de junio de 2026
+**Fecha:** 17 de junio de 2026
 
 ### Objetivo de la sesión
-Reemplazar los IDs hardcodeados en el payload del tamizaje con variables dinámicas reales.
+Construir el formulario de registro de nueva PCD.
 
 ### Lo que se hizo
-- Reemplazado cicloId hardcodeado por cicloActivoId
-- Reemplazado profesionalId hardcodeado por profesionalSeleccionadoId
-- Agregada variable profesionalSeleccionadoNombre (scope global)
-- Corregido bug: profesionalId usaba pcdSeleccionadaId por error de tipeo
-- Corregido bug: nivelApoyoGeneral solo aceptaba 0-3, ahora acepta 0-4
-- Corregido bug: btnGuardar y btnExportarWord leían campo nombreProfesional inexistente
-- Eliminados console.log temporales de prueba
+- Agregada tabla FichaPcd al schema de Prisma (~50 campos)
+- Actualizado modelo Pcd con campos nuevos
+- Migración aplicada: 20260618012429_agregar_ficha_pcd
+- pcd.controller.js reescrito: crearPcd recibe { pcd, ficha }
+- POST /api/pcd probado — Status 201 ✅
+- index.html limpiado (estaba duplicado)
+- pantalla-registro creada como pantalla independiente con sección 1
 
-### Estado actual
-✅ Módulo 1 completamente funcional end-to-end
-✅ Tamizaje se guarda en BD con ciclo y profesional correctos
-✅ Exportar Word funciona correctamente
-
-### Pendientes identificados
-- Manejar el caso "PCD no existe" (formulario de registro de nueva PCD)
-- Módulo 2 — PPA (siguiente módulo)
+### Pendientes
+- Secciones 2 a 7 del formulario HTML
+- JavaScript para enviar el formulario al backend
+- Conectar pantalla-inicio → pantalla-registro
 
 ## 12. Preguntas o dudas abiertas
 

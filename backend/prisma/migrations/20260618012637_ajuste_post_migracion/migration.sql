@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "Pcd" ALTER COLUMN "estadoCivil" DROP DEFAULT,
+ALTER COLUMN "etapaCicloVital" DROP DEFAULT,
+ALTER COLUMN "fechaIngresoSDIS" DROP DEFAULT,
+ALTER COLUMN "tipoDocumento" DROP DEFAULT;

@@ -58,19 +58,21 @@ enum Rol {
 model Pcd {
   id                   String   @id @default(uuid())
   entidadId            String
-  nombre               String
+  tipoDocumento        String   // 'CC' | 'TI' | 'PPT'
   documento            String
+  nombre               String
   fechaNacimiento      DateTime
-  sexo                 String
-  localidad            String
-  diagnosticoPrincipal String
-  tipoDiscapacidad     String   // 'intelectual' | 'multiple'
+  etapaCicloVital      String   // 'adulto_joven' | 'adulto' | 'persona_mayor'
+  fechaIngresoSDIS     DateTime
+  sexo                 String   // 'MASCULINO' | 'FEMENINO'
+  estadoCivil          String
   estado               Estado   @default(ACTIVO)
   creadoEn             DateTime @default(now())
 
-  entidad          Entidad           @relation(fields: [entidadId], references: [id])
-  ciclos           Ciclo[]
-  registrosSesion  RegistroSesion[]
+  entidad         Entidad          @relation(fields: [entidadId], references: [id])
+  ciclos          Ciclo[]
+  registrosSesion RegistroSesion[]
+  ficha           FichaPcd?
 }
 
 enum Estado {
@@ -225,4 +227,74 @@ model ObjetivoTrabajado {
   objetivoPpa    ObjetivoPpa    @relation(fields: [objetivoPpaId], references: [id])
 
   @@unique([registroSesionId, objetivoPpaId])
+}
+
+// ─────────────────────────────────────────
+// FICHA PCD — Caracterización completa
+// ─────────────────────────────────────────
+model FichaPcd {
+  id        String @id @default(uuid())
+  pcdId     String @unique
+
+  // Datos socioeconómicos
+  tieneHijos              Boolean
+  nivelEducativo          String
+  estudiaActualmente      Boolean
+  regimensSalud           String   // 'contributivo' | 'subsidiado' | 'vinculado' | 'especial'
+  nombreEps               String
+  antecedentesHabitaCalle Boolean
+  perteneceGrupoEtnico    Boolean
+  perteneceGrupoLgbti     Boolean
+  victimaConflicto        Boolean
+
+  // Discapacidad y diagnósticos
+  tipoDiscapacidad        String
+  diagnosticoCognitivo    String?  // null si no tiene
+  diagnosticoMental       String?
+  diagnosticoNeurologico  String?
+  diagnosticoSensorial    String?
+
+  // Sistema de apoyos (datos del aval previo)
+  sistemaApoyoGeneral     String   // 'independiente' | 'intermitente' | 'limitado' | 'extenso' | 'generalizado'
+  porcentajeSistemaApoyo  Float
+  catAprendizaje          String
+  catComunicacion         String
+  catIndependencia        String
+  catParticipacion        String
+  catMovilidad            String
+
+  // Requerimientos de cuidado
+  requiereOxigeno         Boolean
+  numMedicamentos         Int
+  enuresis                String   // 'NA' | 'diurna' | 'nocturna' | 'diurna_y_nocturna'
+  recibePaniales          Boolean
+  cantidadPanialesMes     Int?     // null si no recibe
+  requiereCuraciones      Boolean
+
+  // Aspectos conductuales
+  autoagresividad         Boolean
+  heteroagresividad       Boolean
+  destruccionObjetos      Boolean
+  conductasEscapistas     Boolean
+  movimientosRepetitivos  Boolean
+
+  // Ayudas técnicas
+  requiereAyudaTecnica    Boolean
+  tipoAyudaTecnica        String?  // null si no requiere
+  tenenciaAyudaTecnica    String?  // 'propia' | 'en_comodato' | 'NA'
+
+  // Referente familiar
+  nombreReferente         String
+  documentoReferente      String
+  parentescoReferente     String
+  edadReferente           Int
+  cicloVitalReferente     String
+  direccionReferente      String
+  telefonoReferente       String
+  correoReferente         String?
+  barrioReferente         String
+  localidadReferente      String
+
+  creadoEn  DateTime @default(now())
+  pcd       Pcd      @relation(fields: [pcdId], references: [id])
 }
