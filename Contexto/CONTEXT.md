@@ -156,6 +156,7 @@ Ingreso PCD → Sistema de apoyos → Estudio de caso → PPA → Sesiones → S
 - [x] IDs dinámicos: cicloActivoId y profesionalSeleccionadoId reemplazaron hardcodeados
 - [x] nivelApoyoGeneral acepta equivalencia 0-4 (incluye APOYO GENERALIZADO)
 - [x] Formulario de registro de nueva PCD — backend completo
+- [x] Formulario de registro de nueva PCD — frontend + backend completos ✅
 
 ### Módulo 2 — PPA / Plan Personalizado de Apoyo 🔲 Siguiente
 ### Módulo 3 — Sesiones e intervención 🔲 Fase 2
@@ -278,24 +279,26 @@ Ingreso PCD → Sistema de apoyos → Estudio de caso → PPA → Sesiones → S
 
 ## 11. Sesión actual
 
-**Fecha:** 17 de junio de 2026
+## 11. Sesión actual
+
+**Fecha:** 18 de junio de 2026
 
 ### Objetivo de la sesión
-Construir el formulario de registro de nueva PCD.
+Completar el formulario HTML de registro de nueva PCD y conectarlo al backend.
 
 ### Lo que se hizo
-- Agregada tabla FichaPcd al schema de Prisma (~50 campos)
-- Actualizado modelo Pcd con campos nuevos
-- Migración aplicada: 20260618012429_agregar_ficha_pcd
-- pcd.controller.js reescrito: crearPcd recibe { pcd, ficha }
-- POST /api/pcd probado — Status 201 ✅
-- index.html limpiado (estaba duplicado)
-- pantalla-registro creada como pantalla independiente con sección 1
+- Secciones 2 a 7 del formulario HTML completadas
+- Correcciones de UX: EPS como select (13 opciones), 7 tipos de discapacidad, categorías de apoyo como select, tipo de ayuda técnica como select, porcentaje con símbolo %
+- Función registrarNuevaPcd() implementada en scripts.js con helpers bool/val/num/float
+- Validación de campos obligatorios antes del fetch
+- POST /api/pcd probado y funcionando — Status 201 ✅
+- Console.logs de prueba eliminados
+- mostrarPantallaInicio() restaurada como pantalla de arranque
 
 ### Pendientes
-- Secciones 2 a 7 del formulario HTML
-- JavaScript para enviar el formulario al backend
-- Conectar pantalla-inicio → pantalla-registro
+- Diseñar y construir menú principal (pantalla hub entre módulos)
+- Definir flujo de navegación: ¿el profesional elige acción primero o busca PCD primero?
+- Conectar módulo 2 — PPA
 
 ## 12. Preguntas o dudas abiertas
 

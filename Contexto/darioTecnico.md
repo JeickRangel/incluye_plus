@@ -504,5 +504,41 @@ Construir el formulario de registro de nueva PCD.
 2. JavaScript para recoger todos los campos y hacer POST /api/pcd
 3. Botón en pantalla-inicio que lleve a pantalla-registro cuando la PCD no existe
 
+---
+
+## Sesión 10 — 18 de junio de 2026
+
+### 🎯 Objetivo de la sesión
+Completar el formulario HTML de registro de nueva PCD y conectarlo al backend.
+
+### ✅ Lo que se hizo
+- Secciones 2 a 7 del formulario HTML: socioeconómicos, discapacidad, sistema de apoyos, cuidado, conductuales y ayudas técnicas, referente familiar
+- Mejoras de UX: EPS como select con 13 opciones, 7 tipos de discapacidad, categorías de apoyo como select, tipo de ayuda técnica como select, porcentaje con símbolo %
+- Función registrarNuevaPcd() con helpers bool/val/num/float, validación previa y fetch POST /api/pcd
+- Registro exitoso verificado end-to-end — Status 201 ✅
+- Console.logs de prueba eliminados, mostrarPantallaInicio() restaurada
+
+### 🐛 Problemas encontrados y soluciones
+| Problema | Causa | Solución |
+|----------|-------|----------|
+| catComunicacion y catIndependencia llegaban null al backend | Tres selects tenían el mismo id `reg-catAprendizaje` | Corregir ids a `reg-catComunicacion` y `reg-catIndependencia` |
+| Validación no bloqueaba el fetch | Estaba ubicada después del try/fetch | Moverla antes del bloque try |
+| registrarNuevaPcd() no era accesible desde el botón | Quedó pegada dentro de generarPanelAnalisis() | Moverla al scope correcto fuera de esa función |
+| entidadActivaId no definida | Nombre incorrecto — la variable real es ENTIDAD_ID | Cambiar a ENTIDAD_ID en datosPcd |
+
+### 🧠 Conceptos aprendidos
+**IDs únicos en HTML:** Si dos elementos tienen el mismo `id`, JavaScript siempre lee el primero — el segundo es invisible para el código aunque esté lleno visualmente en pantalla. Cada campo debe tener un `id` único.
+
+### 📌 Estado al cerrar la sesión
+✅ Formulario de registro de nueva PCD completo y funcional end-to-end
+⏳ Menú principal (hub de navegación entre módulos) pendiente de diseño y construcción
+⏳ Flujo de navegación entre pantallas pendiente
+
+### ⏭️ Próximo paso
+Diseñar el menú principal: decidir si el profesional elige acción primero o busca PCD primero, luego construir la pantalla hub que conecte todos los módulos.
+
+---
+
+
 *Proyecto iniciado: 2026 — Autor: Jeisson Rangel*
 *Actualizar al finalizar cada sesión de trabajo.*

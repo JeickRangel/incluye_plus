@@ -231,7 +231,498 @@
             </div>
             <!-- FIN sección 1 -->
 
-            <!-- Aquí irán las secciones 2 a 7 -->
+            <!-- ── SECCIÓN 2: Datos socioeconómicos ── -->
+<div class="card mb-4">
+    <div class="card-header" style="background-color: var(--color-principal); color: white;">
+        <strong>2. Datos socioeconómicos</strong>
+    </div>
+    <div class="card-body">
+        <div class="row g-3">
+
+            <div class="col-md-4">
+                <label class="form-label">Nivel educativo *</label>
+                <select id="reg-nivelEducativo" class="form-select">
+                    <option value="">Seleccione...</option>
+                    <option value="ninguno">Ninguno</option>
+                    <option value="primaria">Primaria</option>
+                    <option value="secundaria">Secundaria</option>
+                    <option value="tecnico">Técnico / Tecnológico</option>
+                    <option value="universitario">Universitario</option>
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">¿Estudia actualmente? *</label>
+                <select id="reg-estudiaActualmente" class="form-select">
+                    <option value="">Seleccione...</option>
+                    <option value="true">Sí</option>
+                    <option value="false">No</option>
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">¿Tiene hijos? *</label>
+                <select id="reg-tieneHijos" class="form-select">
+                    <option value="">Seleccione...</option>
+                    <option value="true">Sí</option>
+                    <option value="false">No</option>
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Régimen de salud *</label>
+                <select id="reg-regimenSalud" class="form-select">
+                    <option value="">Seleccione...</option>
+                    <option value="contributivo">Contributivo</option>
+                    <option value="subsidiado">Subsidiado</option>
+                    <option value="especial">Especial</option>
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Nombre de la EPS *</label>
+                <select id="reg-nombreEps" class="form-select">
+                    <option value="">Seleccione...</option>
+                    <option value="Nueva EPS">Nueva EPS</option>
+                    <option value="EPS Sanitas">EPS Sanitas</option>
+                    <option value="EPS Sura">EPS Sura</option>
+                    <option value="Salud Total">Salud Total</option>
+                    <option value="Compensar EPS">Compensar EPS</option>
+                    <option value="EPS Famisanar">EPS Famisanar</option>
+                    <option value="Coosalud">Coosalud</option>
+                    <option value="Mutual Ser">Mutual Ser</option>
+                    <option value="Aliansalud">Aliansalud</option>
+                    <option value="Capital Salud">Capital Salud</option>
+                    <option value="DISAN">DISAN</option>
+                    <option value="SSFM">SSFM</option>
+                    <option value="FOMAG">FOMAG</option>
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">¿Antecedentes de habitabilidad en calle? *</label>
+                <select id="reg-antecedentesHabitaCalle" class="form-select">
+                    <option value="">Seleccione...</option>
+                    <option value="true">Sí</option>
+                    <option value="false">No</option>
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">¿Pertenece a grupo étnico? *</label>
+                <select id="reg-perteneceGrupoEtnico" class="form-select">
+                    <option value="">Seleccione...</option>
+                    <option value="true">Sí</option>
+                    <option value="false">No</option>
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">¿Pertenece a comunidad LGBTI? *</label>
+                <select id="reg-perteneceGrupoLgbti" class="form-select">
+                    <option value="">Seleccione...</option>
+                    <option value="true">Sí</option>
+                    <option value="false">No</option>
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">¿Víctima del conflicto armado? *</label>
+                <select id="reg-victimaConflicto" class="form-select">
+                    <option value="">Seleccione...</option>
+                    <option value="true">Sí</option>
+                    <option value="false">No</option>
+                </select>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- FIN sección 2 -->
+
+<!-- ── SECCIÓN 3: Discapacidad y diagnósticos ── -->
+<div class="card mb-4">
+    <div class="card-header" style="background-color: var(--color-principal); color: white;">
+        <strong>3. Discapacidad y diagnósticos</strong>
+    </div>
+    <div class="card-body">
+        <div class="row g-3">
+
+            <div class="col-md-4">
+                <label class="form-label">Tipo de discapacidad *</label>
+                <select id="reg-tipoDiscapacidad" class="form-select">
+                    <option value="">Seleccione...</option>
+                    <option value="intelectual">Intelectual</option>
+                    <option value="psicosocial">Psicosocial</option>
+                    <option value="fisica">Física</option>
+                    <option value="multiple">Múltiple</option>
+                    <option value="auditiva">Auditiva</option>
+                    <option value="visual">Visual</option>
+                    <option value="sordoceguera">Sordoceguera</option>
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Diagnóstico cognitivo</label>
+                <input type="text" id="reg-diagnosticoCognitivo" class="form-control" placeholder="Opcional">
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Diagnóstico mental</label>
+                <input type="text" id="reg-diagnosticoMental" class="form-control" placeholder="Opcional">
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Diagnóstico neurológico</label>
+                <input type="text" id="reg-diagnosticoNeurologico" class="form-control" placeholder="Opcional">
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Diagnóstico sensorial</label>
+                <input type="text" id="reg-diagnosticoSensorial" class="form-control" placeholder="Opcional">
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- FIN sección 3 -->
+
+<!-- ── SECCIÓN 4: Sistema de apoyos previo ── -->
+<div class="card mb-4">
+    <div class="card-header" style="background-color: var(--color-principal); color: white;">
+        <strong>4. Sistema de apoyos (valoración previa)</strong>
+    </div>
+    <div class="card-body">
+        <div class="row g-3">
+
+            <div class="col-md-4">
+                <label class="form-label">Nivel de apoyo general *</label>
+                <select id="reg-sistemaApoyoGeneral" class="form-select">
+                    <option value="">Seleccione...</option>
+                    <option value="independiente">Independiente</option>
+                    <option value="intermitente">Intermitente</option>
+                    <option value="limitado">Limitado</option>
+                    <option value="extenso">Extenso</option>
+                    <option value="generalizado">Generalizado</option>
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Porcentaje del sistema de apoyo *</label>
+                <div class="input-group">
+                    <input type="number" id="reg-porcentajeSistemaApoyo" class="form-control" min="0" max="100" placeholder="Ej: 75">
+                    <span class="input-group-text">%</span>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Categoría: Aprendizaje *</label>
+                    <select id="reg-catAprendizaje" class="form-select">
+                        <option value="">Seleccione...</option>
+                        <option value="independiente">Independiente</option>
+                        <option value="intermitente">Intermitente</option>
+                        <option value="limitado">Limitado</option>
+                        <option value="extenso">Extenso</option>
+                        <option value="generalizado">Generalizado</option>
+                    </select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Categoría: Comunicación *</label>
+                <select id="reg-catComunicacion" class="form-select">
+                        <option value="">Seleccione...</option>
+                        <option value="independiente">Independiente</option>
+                        <option value="intermitente">Intermitente</option>
+                        <option value="limitado">Limitado</option>
+                        <option value="extenso">Extenso</option>
+                        <option value="generalizado">Generalizado</option>
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Categoría: Independencia *</label>
+                <select id="reg-catIndependencia" class="form-select">
+                        <option value="">Seleccione...</option>
+                        <option value="independiente">Independiente</option>
+                        <option value="intermitente">Intermitente</option>
+                        <option value="limitado">Limitado</option>
+                        <option value="extenso">Extenso</option>
+                        <option value="generalizado">Generalizado</option>
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Categoría: Participación *</label>
+                <select id="reg-catParticipacion" class="form-select">
+                    <option value="">Seleccione...</option>
+                    <option value="independiente">Independiente</option>
+                    <option value="intermitente">Intermitente</option>
+                    <option value="limitado">Limitado</option>
+                    <option value="extenso">Extenso</option>
+                    <option value="generalizado">Generalizado</option>
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Categoría: Movilidad *</label>
+                <select id="reg-catMovilidad" class="form-select">
+                    <option value="">Seleccione...</option>
+                    <option value="independiente">Independiente</option>
+                    <option value="intermitente">Intermitente</option>
+                    <option value="limitado">Limitado</option>
+                    <option value="extenso">Extenso</option>
+                    <option value="generalizado">Generalizado</option>
+                </select>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- FIN sección 4 -->
+
+<!-- ── SECCIÓN 5: Requerimientos de cuidado ── -->
+<div class="card mb-4">
+    <div class="card-header" style="background-color: var(--color-principal); color: white;">
+        <strong>5. Requerimientos de cuidado</strong>
+    </div>
+    <div class="card-body">
+        <div class="row g-3">
+
+            <div class="col-md-4">
+                <label class="form-label">¿Requiere oxígeno? *</label>
+                <select id="reg-requiereOxigeno" class="form-select">
+                    <option value="">Seleccione...</option>
+                    <option value="true">Sí</option>
+                    <option value="false">No</option>
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Número de medicamentos *</label>
+                <input type="number" id="reg-numMedicamentos" class="form-control" min="0" placeholder="0">
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Enuresis *</label>
+                <select id="reg-enuresis" class="form-select">
+                    <option value="">Seleccione...</option>
+                    <option value="NA">No aplica</option>
+                    <option value="diurna">Diurna</option>
+                    <option value="nocturna">Nocturna</option>
+                    <option value="diurna_y_nocturna">Diurna y nocturna</option>
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">¿Recibe pañales? *</label>
+                <select id="reg-recibePaniales" class="form-select">
+                    <option value="">Seleccione...</option>
+                    <option value="true">Sí</option>
+                    <option value="false">No</option>
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Cantidad de pañales al mes</label>
+                <input type="number" id="reg-cantidadPanialesMes" class="form-control" min="0" placeholder="Dejar vacío si no aplica">
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">¿Requiere curaciones? *</label>
+                <select id="reg-requiereCuraciones" class="form-select">
+                    <option value="">Seleccione...</option>
+                    <option value="true">Sí</option>
+                    <option value="false">No</option>
+                </select>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- FIN sección 5 -->
+
+<!-- ── SECCIÓN 6: Aspectos conductuales y ayudas técnicas ── -->
+<div class="card mb-4">
+    <div class="card-header" style="background-color: var(--color-principal); color: white;">
+        <strong>6. Aspectos conductuales y ayudas técnicas</strong>
+    </div>
+    <div class="card-body">
+
+        <p class="text-muted mb-3"><small>Marque las conductas que presenta la persona:</small></p>
+        <div class="row g-3 mb-4">
+
+            <div class="col-md-4">
+                <label class="form-label">Autoagresividad *</label>
+                <select id="reg-autoagresividad" class="form-select">
+                    <option value="">Seleccione...</option>
+                    <option value="true">Sí presenta</option>
+                    <option value="false">No presenta</option>
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Heteroagresividad *</label>
+                <select id="reg-heteroagresividad" class="form-select">
+                    <option value="">Seleccione...</option>
+                    <option value="true">Sí presenta</option>
+                    <option value="false">No presenta</option>
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Destrucción de objetos *</label>
+                <select id="reg-destruccionObjetos" class="form-select">
+                    <option value="">Seleccione...</option>
+                    <option value="true">Sí presenta</option>
+                    <option value="false">No presenta</option>
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Conductas escapistas *</label>
+                <select id="reg-conductasEscapistas" class="form-select">
+                    <option value="">Seleccione...</option>
+                    <option value="true">Sí presenta</option>
+                    <option value="false">No presenta</option>
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Movimientos repetitivos *</label>
+                <select id="reg-movimientosRepetitivos" class="form-select">
+                    <option value="">Seleccione...</option>
+                    <option value="true">Sí presenta</option>
+                    <option value="false">No presenta</option>
+                </select>
+            </div>
+
+        </div>
+
+        <hr>
+        <p class="text-muted mb-3"><small>Ayudas técnicas:</small></p>
+        <div class="row g-3">
+
+            <div class="col-md-4">
+                <label class="form-label">¿Requiere ayuda técnica? *</label>
+                <select id="reg-requiereAyudaTecnica" class="form-select">
+                    <option value="">Seleccione...</option>
+                    <option value="true">Sí</option>
+                    <option value="false">No</option>
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Tipo de ayuda técnica</label>
+                <select id="reg-tipoAyudaTecnica" class="form-select">
+                    <option value="">Seleccione...</option>
+                    <option value="baston">Bastón</option>
+                    <option value="caminador">Caminador</option>
+                    <option value="silla_ruedas">Silla de ruedas</option>
+                    <option value="silla_neurologica">Silla neurológica</option>
+                    <option value="silla_cama">Silla cama</option>
+                    <option value="ortesis">Ortesis</option>
+                    <option value="protesis">Prótesis</option>
+                    <option value="audifonos">Audífonos</option>
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Tenencia de la ayuda técnica</label>
+                <select id="reg-tenenciaAyudaTecnica" class="form-select">
+                    <option value="">Seleccione...</option>
+                    <option value="propia">Propia</option>
+                    <option value="en_comodato">En comodato</option>
+                    <option value="NA">No aplica</option>
+                </select>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- FIN sección 6 -->
+
+<!-- ── SECCIÓN 7: Referente familiar ── -->
+<div class="card mb-4">
+    <div class="card-header" style="background-color: var(--color-principal); color: white;">
+        <strong>7. Referente familiar</strong>
+    </div>
+    <div class="card-body">
+        <div class="row g-3">
+
+            <div class="col-md-4">
+                <label class="form-label">Nombre completo *</label>
+                <input type="text" id="reg-nombreReferente" class="form-control" placeholder="Nombre del referente">
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Número de documento *</label>
+                <input type="text" id="reg-documentoReferente" class="form-control" placeholder="Documento">
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Parentesco *</label>
+                <select id="reg-parentescoReferente" class="form-select">
+                    <option value="">Seleccione...</option>
+                    <option value="madre">Madre</option>
+                    <option value="padre">Padre</option>
+                    <option value="hermano_a">Hermano/a</option>
+                    <option value="conyuge">Cónyuge</option>
+                    <option value="hijo_a">Hijo/a</option>
+                    <option value="otro">Otro</option>
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Edad *</label>
+                <input type="number" id="reg-edadReferente" class="form-control" min="18" placeholder="Edad en años">
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Etapa de ciclo vital *</label>
+                <select id="reg-cicloVitalReferente" class="form-select">
+                    <option value="">Seleccione...</option>
+                    <option value="adulto_joven">Adulto joven (19–26 años)</option>
+                    <option value="adulto">Adulto (27–59 años)</option>
+                    <option value="persona_mayor">Persona mayor (60 años o más)</option>
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Dirección *</label>
+                <input type="text" id="reg-direccionReferente" class="form-control" placeholder="Dirección de residencia">
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Teléfono *</label>
+                <input type="text" id="reg-telefonoReferente" class="form-control" placeholder="Número de contacto">
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Correo electrónico</label>
+                <input type="email" id="reg-correoReferente" class="form-control" placeholder="Opcional">
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Barrio *</label>
+                <input type="text" id="reg-barrioReferente" class="form-control" placeholder="Barrio">
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Localidad *</label>
+                <input type="text" id="reg-localidadReferente" class="form-control" placeholder="Localidad de Bogotá">
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- FIN sección 7 -->
+
+<!-- Botón de guardar -->
+<div class="d-flex justify-content-end mb-5">
+    <button id="btnRegistrarPcd" class="btn btn-lg" style="background-color: var(--color-principal); color: white;">
+        Registrar persona
+    </button>
+</div>
 
             <!-- Botón guardar -->
             <div class="d-flex justify-content-end mt-4 mb-5">

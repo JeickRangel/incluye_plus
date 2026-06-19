@@ -9,6 +9,7 @@ window.addEventListener("DOMContentLoaded", () => {
     const resultadoFinal    = document.getElementById("resultado-final");
     // ID temporal de la entidad — luego vendrá del login (JWT)
     const ENTIDAD_ID = "4eb51e92-cdcd-4918-b416-4a07ab35c12d";
+    document.getElementById("btnRegistrarPcd").addEventListener("click", registrarNuevaPcd);
 
     // Variables globales para guardar los datos seleccionados en pantalla 0
     let profesionalSeleccionadoId = null;
@@ -76,6 +77,12 @@ window.addEventListener("DOMContentLoaded", () => {
         document.getElementById("pantalla-inicio").style.display     = "none";
         document.getElementById("pantalla-evaluacion").style.display = "none";
         document.getElementById("pantalla-resultado").style.display  = "block";
+    }
+    function mostrarPantallaRegistro() {
+        document.getElementById("pantalla-inicio").style.display    = "none";
+        document.getElementById("pantalla-evaluacion").style.display = "none";
+        document.getElementById("pantalla-resultado").style.display  = "none";
+        document.getElementById("pantalla-registro").style.display   = "block";
     }
  
     // =========================
@@ -400,6 +407,140 @@ async function buscarPcdPorNombre(req, res) {
         f.textContent = abierto ? "▼" : "▲";
     };
  
+    // Recoge todos los campos del formulario y envía POST /api/pcd
+async function registrarNuevaPcd() {
+
+    // ── Helpers ──────────────────────────────────────────
+    // Convierte "true"/"false" string a booleano real
+    const bool = id => document.getElementById(id)?.value === "true";
+    // Lee el valor de un campo de texto o select
+    const val  = id => document.getElementById(id)?.value.trim() || null;
+    // Lee un número entero, devuelve null si está vacío
+    const num  = id => {
+        const v = document.getElementById(id)?.value;
+        return v !== "" && v !== null && v !== undefined ? parseInt(v) : null;
+    };
+    // Lee un número decimal
+    const float = id => {
+        const v = document.getElementById(id)?.value;
+        return v !== "" && v !== null && v !== undefined ? parseFloat(v) : null;
+    };
+
+    // ── Bloque pcd (tabla Pcd) ────────────────────────────
+    const datosPcd = {
+        entidadId: ENTIDAD_ID,   // variable global — igual que cicloActivoId
+        tipoDocumento:   val("reg-tipoDocumento"),
+        documento:       val("reg-documento"),
+        nombre:          val("reg-nombre"),
+        fechaNacimiento: val("reg-fechaNacimiento"),
+        etapaCicloVital: val("reg-etapaCicloVital"),
+        fechaIngresoSDIS:val("reg-fechaIngresoSDIS"),
+        sexo:            val("reg-sexo"),
+        estadoCivil:     val("reg-estadoCivil"),
+    };
+
+    // ── Bloque ficha (tabla FichaPcd) ─────────────────────
+    const datosFicha = {
+        // Socioeconómicos
+        tieneHijos:              bool("reg-tieneHijos"),
+        nivelEducativo:          val("reg-nivelEducativo"),
+        estudiaActualmente:      bool("reg-estudiaActualmente"),
+        regimensSalud:           val("reg-regimenSalud"),
+        nombreEps:               val("reg-nombreEps"),
+        antecedentesHabitaCalle: bool("reg-antecedentesHabitaCalle"),
+        perteneceGrupoEtnico:    bool("reg-perteneceGrupoEtnico"),
+        perteneceGrupoLgbti:     bool("reg-perteneceGrupoLgbti"),
+        victimaConflicto:        bool("reg-victimaConflicto"),
+        // Discapacidad
+        tipoDiscapacidad:        val("reg-tipoDiscapacidad"),
+        diagnosticoCognitivo:    val("reg-diagnosticoCognitivo"),
+        diagnosticoMental:       val("reg-diagnosticoMental"),
+        diagnosticoNeurologico:  val("reg-diagnosticoNeurologico"),
+        diagnosticoSensorial:    val("reg-diagnosticoSensorial"),
+        // Sistema de apoyos
+        sistemaApoyoGeneral:     val("reg-sistemaApoyoGeneral"),
+        porcentajeSistemaApoyo:  float("reg-porcentajeSistemaApoyo"),
+        catAprendizaje:          val("reg-catAprendizaje"),
+        catComunicacion:         val("reg-catComunicacion"),
+        catIndependencia:        val("reg-catIndependencia"),
+        catParticipacion:        val("reg-catParticipacion"),
+        catMovilidad:            val("reg-catMovilidad"),
+        // Cuidado
+        requiereOxigeno:         bool("reg-requiereOxigeno"),
+        numMedicamentos:         num("reg-numMedicamentos"),
+        enuresis:                val("reg-enuresis"),
+        recibePaniales:          bool("reg-recibePaniales"),
+        cantidadPanialesMes:     num("reg-cantidadPanialesMes"),
+        requiereCuraciones:      bool("reg-requiereCuraciones"),
+        // Conductuales
+        autoagresividad:         bool("reg-autoagresividad"),
+        heteroagresividad:       bool("reg-heteroagresividad"),
+        destruccionObjetos:      bool("reg-destruccionObjetos"),
+        conductasEscapistas:     bool("reg-conductasEscapistas"),
+        movimientosRepetitivos:  bool("reg-movimientosRepetitivos"),
+        // Ayudas técnicas
+        requiereAyudaTecnica:    bool("reg-requiereAyudaTecnica"),
+        tipoAyudaTecnica:        val("reg-tipoAyudaTecnica"),
+        tenenciaAyudaTecnica:    val("reg-tenenciaAyudaTecnica"),
+        // Referente familiar
+        nombreReferente:         val("reg-nombreReferente"),
+        documentoReferente:      val("reg-documentoReferente"),
+        parentescoReferente:     val("reg-parentescoReferente"),
+        edadReferente:           num("reg-edadReferente"),
+        cicloVitalReferente:     val("reg-cicloVitalReferente"),
+        direccionReferente:      val("reg-direccionReferente"),
+        telefonoReferente:       val("reg-telefonoReferente"),
+        correoReferente:         val("reg-correoReferente"),
+        barrioReferente:         val("reg-barrioReferente"),
+        localidadReferente:      val("reg-localidadReferente"),
+    };
+
+    // ── Validación mínima antes de enviar ─────────────────
+    if (!datosPcd.documento || !datosPcd.nombre || !datosPcd.tipoDocumento) {
+        alert("Por favor completa los campos obligatorios: tipo de documento, número y nombre.");
+        return;
+    }
+
+    // Validar campos obligatorios de ficha
+const camposNulos = Object.entries(datosFicha)
+    .filter(([clave, valor]) => {
+        // Estos campos SÍ pueden ser null (tienen ? en Prisma)
+        const opcionales = ['diagnosticoCognitivo','diagnosticoMental','diagnosticoNeurologico',
+                           'diagnosticoSensorial','cantidadPanialesMes','tipoAyudaTecnica',
+                           'tenenciaAyudaTecnica','correoReferente'];
+        return !opcionales.includes(clave) && (valor === null || valor === '');
+    })
+    .map(([clave]) => clave);
+
+if (camposNulos.length > 0) {
+    alert(`Por favor completa todos los campos obligatorios.\n\nFaltan: ${camposNulos.join(', ')}`);
+    return;
+}
+
+    // ── Envío al backend ──────────────────────────────────
+    try {
+        const respuesta = await fetch("http://localhost:3000/api/pcd", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ pcd: datosPcd, ficha: datosFicha })
+        });
+
+        const datos = await respuesta.json();
+
+        if (respuesta.ok) {
+            alert(`✅ Persona registrada exitosamente: ${datosPcd.nombre}`);
+            mostrarPantallaInicio();
+        } else {
+            alert(`❌ Error: ${datos.error}`);
+            console.error("Error del backend:", datos);
+        }
+
+    } catch (error) {
+        alert("❌ No se pudo conectar con el servidor. ¿Está corriendo el backend?");
+        console.error("Error de red:", error);
+    }
+}
+
     // =========================
     // MOSTRAR RESULTADO FINAL
     // =========================
@@ -661,5 +802,6 @@ async function buscarPcdPorNombre(req, res) {
         document.body.classList.toggle("sb-sidenav-toggled");
     });
  
+    //mostrarPantallaRegistro();//Temp
     mostrarPantallaInicio();
 })

@@ -754,3 +754,28 @@ textarea.form-control { resize: vertical; min-height: 70px; }
     font-style: italic;
     margin: 0;
 }
+/* ============================================================
+   PANTALLA DE REGISTRO
+   ============================================================ */
+
+   /* Selects y inputs del formulario de registro */
+.form-select, .form-control {
+    border: 1px solid var(--color-borde);
+    border-radius: 6px;
+    padding: 8px 12px;
+    color: var(--color-texto);
+    background-color: #ffffff;
+}
+
+.form-select:focus, .form-control:focus {
+    border-color: var(--color-secundario);
+    box-shadow: 0 0 0 3px rgba(0, 131, 143, 0.15);
+    outline: none;
+}
+
+.form-label {
+    font-weight: 500;
+    color: var(--color-texto);
+    margin-bottom: 4px;
+    font-size: 0.9rem;
+}
