@@ -70,7 +70,7 @@
 
 ---
 
-## 3. Estructura de carpetas actual
+## 3. Estructura de carpetas actual (actualizado a 29/06/2026)
 
 ```
 incluye_plus/
@@ -91,22 +91,59 @@ incluye_plus/
 │   └── FileSaver.min.js
 ├── index.html
 └── backend/
+    ├── node_modules/ (Por defecto)
+    ├── prisma/
+    │   ├──migrations
+    │   │   ├── 20260604163658_init/
+    │   │   ├── 20260618012429_agregar_ficha_pcd/
+    │   │   ├── 20260618012637_ajuste_post_migracion/
+    │   │   ├── migration_lock.toml
+    │   │   ├── schema.prisma
+    │   │   ├── seed.js
     ├── src/
     │   ├── controllers/
-    │   │   ├── pcd.controller.js        ✅
-    │   │   ├── tamizaje.controller.js   ✅
-    │   │   ├── profesional.controller.js ✅ nuevo
-    │   │   └── ciclo.controller.js      ✅ nuevo
+    │   │   └── auth.controller.js
+    │   │   ├── pcd.controller.js        
+    │   │   ├── tamizaje.controller.js   
+    │   │   ├── profesional.controller.js 
+    │   │   └── ciclo.controller.js      
     │   ├── routes/
-    │   │   ├── pcd.routes.js            ✅ actualizado
-    │   │   ├── tamizaje.routes.js       ✅
-    │   │   ├── profesional.routes.js    ✅ nuevo
-    │   │   └── ciclo.routes.js          ✅ nuevo
+    │   │   └── auth.routes.js
+    │   │   ├── pcd.routes.js            
+    │   │   ├── tamizaje.routes.js       
+    │   │   ├── profesional.routes.js    
+    │   │   └── ciclo.routes.js          
     │   ├── lib/
     │   │   └── prisma.js
+    │   ├── middleaware/
+    │   │   └── auth.middleaware.js
     │   └── index.js
+    │   └── seed-password.js
+    ├── .env
+    ├── package-lock.json
+    ├── package.json
+    ├── prisma.config.ts.bak
     └── prisma/
         └── schema.prisma
+└── Contexto/
+    ├── CONTEXTO.md
+    ├── diarioTecnico.md
+└── css/
+    ├── styles.css
+└── js/
+    ├── data.js
+    ├── scripts.js
+└── libs/
+    ├── docxtemplater.js
+    ├── FileSaver.min.js
+    ├── pizzip.min.js
+└── node_modules/
+└── .gitignore
+└── index.html
+└── Login.html
+└── package-lock.json
+└── package-lock
+
 ```
 
 ### Estructura objetivo (cuando migre a React)
