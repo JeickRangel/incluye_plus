@@ -538,7 +538,66 @@ Completar el formulario HTML de registro de nueva PCD y conectarlo al backend.
 Diseñar el menú principal: decidir si el profesional elige acción primero o busca PCD primero, luego construir la pantalla hub que conecte todos los módulos.
 
 ---
+## Sesión 11 — 29 de junio de 2026
 
+### 🎯 Objetivo de la sesión
+Implementar autenticación real con JWT y construir el dashboard principal con navegación entre módulos.
+
+### ✅ Lo que se hizo
+- Instalados paquetes `jsonwebtoken` y `bcrypt` en el backend
+- Creado `middleware/auth.middleware.js` con función `verificarToken`
+- Creado `auth.controller.js` con función `login` (valida email + clave, devuelve JWT)
+- Creado `auth.routes.js` con `POST /api/auth/login`
+- Registrada la ruta en `index.js`
+- Aplicado `verificarToken` en todas las rutas: pcd, tamizaje, profesionales, ciclos
+- Creado script `seed-password.js` para asignar contraseña encriptada a Mónica Pineros
+- Login probado en Thunder Client — Status 200, token JWT recibido ✅
+- Middleware probado — rutas devuelven 401 sin token ✅
+- Creado `login.html` con formulario, manejo de errores y redirección
+- Estilos de login agregados a `styles.css`
+- `scripts.js` protegido — redirige a login.html si no hay token
+- Navbar actualizada con nombre del profesional y botón cerrar sesión
+- Sidebar reemplazado con módulos reales de la app
+- Dashboard creado con cards visuales y navegación funcional
+- Funciones `mostrarPantalla...` actualizadas para manejar todas las pantallas
+
+### 🐛 Problemas encontrados y soluciones
+| Problema | Causa raíz | Solución |
+|----------|-----------|----------|
+| Sidebar con categorías del tamizaje en lugar de módulos | Era el diseño anterior sin actualizar | Reemplazar contenido del sidebar-wrapper |
+| Botones del sidebar no funcionaban | Llamaban a `mostrarPantalla()` que no existe | Cambiar por nombres exactos de funciones existentes |
+| `mostrarPantallaInicio()` mostraba pantalla de registro | No ocultaba `pantalla-registro` | Agregar esa línea a todas las funciones mostrarPantalla |
+| Dashboard arrancaba en tamizaje en lugar del hub | La llamada inicial era `mostrarPantallaInicio()` | Cambiar por `mostrarPantallaDashboard()` |
+| `pantalla-dashboard` oculta repetida 4 veces en cada función | Se agregó la línea en cada display en lugar de una sola vez | Limpiar funciones con una sola línea por pantalla |
+
+### 🧠 Conceptos aprendidos
+
+**¿Cómo funciona JWT?**
+Es como un carné temporal: el servidor lo genera al hacer login, firmado con una clave secreta. El frontend lo guarda y lo envía en cada petición. El servidor verifica la firma sin consultar la base de datos — por eso es eficiente.
+
+**¿Qué es un middleware en Express?**
+Una función que se ejecuta entre que llega la petición y llega al controlador. `verificarToken` es un middleware: verifica el JWT y si es válido llama a `next()` para dejar pasar. Si no, responde 401 directamente.
+
+**¿Por qué el mismo mensaje para email y clave incorrectos?**
+Si el servidor responde diferente cuando el email no existe vs cuando la clave es incorrecta, un atacante puede enumerar qué emails están registrados. Con el mismo mensaje "Credenciales inválidas" no se revela información.
+
+**¿Qué es `next()` en Express?**
+Le dice a Express que este middleware terminó y que pase a la siguiente función en la cadena. Sin `next()`, la petición queda colgada indefinidamente.
+
+### 📌 Estado al cerrar la sesión
+✅ Autenticación completa (login, JWT, middleware, logout)
+✅ Dashboard con sidebar y navegación entre módulos
+✅ Todas las rutas del backend protegidas
+⏳ Botones del dashboard pendientes de conectar
+⏳ Buscador de PCD en dashboard pendiente
+⏳ Token JWT no se envía aún en peticiones del frontend al backend
+
+### ⏭️ Próximo paso
+1. Conectar botones dash-tamizaje y dash-registro en el dashboard
+2. Agregar buscador de PCD en el dashboard
+3. Modificar todas las llamadas fetch del frontend para incluir el token JWT en el header Authorization
+
+---
 
 *Proyecto iniciado: 2026 — Autor: Jeisson Rangel*
 *Actualizar al finalizar cada sesión de trabajo.*

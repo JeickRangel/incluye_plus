@@ -1,3 +1,13 @@
+// ── Protección de ruta: si no hay token, ir al login ──
+const token = localStorage.getItem('token')
+if (!token) {
+    window.location.href = 'login.html'
+}
+
+// ── Datos de sesión activa ──
+const PROFESIONAL_NOMBRE     = localStorage.getItem('profesionalNombre')
+const PROFESIONAL_DISCIPLINA = localStorage.getItem('profesionalDisciplina')
+
 window.addEventListener("DOMContentLoaded", () => {
  
     const questionContainer = document.getElementById("question-container");
@@ -7,8 +17,37 @@ window.addEventListener("DOMContentLoaded", () => {
     const barraProgreso     = document.getElementById("barraProgreso");
     const categoriaActual   = document.getElementById("categoriaActual");
     const resultadoFinal    = document.getElementById("resultado-final");
+    
+    
     // ID temporal de la entidad — luego vendrá del login (JWT)
     const ENTIDAD_ID = "4eb51e92-cdcd-4918-b416-4a07ab35c12d";
+  
+   // ── Navegación del sidebar ──
+document.getElementById('nav-inicio').addEventListener('click', () => {
+    mostrarPantallaDashboard()
+})
+document.getElementById('nav-registro').addEventListener('click', () => {
+    mostrarPantallaRegistro()
+})
+document.getElementById('nav-tamizaje').addEventListener('click', () => {
+    mostrarPantallaInicio()
+})
+document.getElementById('nav-ficha').addEventListener('click', () => {
+    mostrarPantallaInicio()
+})
+
+
+    // ── Mostrar nombre del profesional en navbar ──
+document.getElementById('navbar-profesional').textContent = PROFESIONAL_NOMBRE
+
+// ── Cerrar sesión ──
+document.getElementById('btn-cerrar-sesion').addEventListener('click', () => {
+    localStorage.removeItem('token')
+    localStorage.removeItem('profesionalNombre')
+    localStorage.removeItem('profesionalDisciplina')
+    window.location.href = 'login.html'
+})
+
     document.getElementById("btnRegistrarPcd").addEventListener("click", registrarNuevaPcd);
 
     // Variables globales para guardar los datos seleccionados en pantalla 0
@@ -58,32 +97,56 @@ window.addEventListener("DOMContentLoaded", () => {
     }
  
     // =========================
-    // PANTALLAS
-    // =========================
-    function mostrarPantallaInicio() {
-        document.getElementById("pantalla-inicio").style.display     = "block";
-        document.getElementById("pantalla-evaluacion").style.display = "none";
-        document.getElementById("pantalla-resultado").style.display  = "none";
-    }
-    function mostrarPantallaEvaluacion() {
-        document.getElementById("pantalla-inicio").style.display     = "none";
-        document.getElementById("pantalla-evaluacion").style.display = "block";
-        document.getElementById("pantalla-resultado").style.display  = "none";
-        const nombre = document.getElementById("nombre")?.value || "";
-        const el = document.getElementById("navbar-nombre-pcd");
-        if (el) el.textContent = nombre ? `Evaluando: ${nombre}` : "";
-    }
-    function mostrarPantallaResultado() {
-        document.getElementById("pantalla-inicio").style.display     = "none";
-        document.getElementById("pantalla-evaluacion").style.display = "none";
-        document.getElementById("pantalla-resultado").style.display  = "block";
-    }
-    function mostrarPantallaRegistro() {
-        document.getElementById("pantalla-inicio").style.display    = "none";
-        document.getElementById("pantalla-evaluacion").style.display = "none";
-        document.getElementById("pantalla-resultado").style.display  = "none";
-        document.getElementById("pantalla-registro").style.display   = "block";
-    }
+// PANTALLAS
+// =========================
+function mostrarPantallaDashboard() {
+    document.getElementById("pantalla-dashboard").style.display  = "block";
+    document.getElementById("pantalla-inicio").style.display     = "none";
+    document.getElementById("pantalla-evaluacion").style.display = "none";
+    document.getElementById("pantalla-resultado").style.display  = "none";
+    document.getElementById("pantalla-registro").style.display   = "none";
+    document.getElementById("dashboard-nombre").textContent      = PROFESIONAL_NOMBRE;
+}
+function mostrarPantallaInicio() {
+    document.getElementById("pantalla-dashboard").style.display  = "none";
+    document.getElementById("pantalla-inicio").style.display     = "block";
+    document.getElementById("pantalla-evaluacion").style.display = "none";
+    document.getElementById("pantalla-resultado").style.display  = "none";
+    document.getElementById("pantalla-registro").style.display   = "none";
+}
+function mostrarPantallaEvaluacion() {
+    document.getElementById("pantalla-dashboard").style.display  = "none";
+    document.getElementById("pantalla-inicio").style.display     = "none";
+    document.getElementById("pantalla-evaluacion").style.display = "block";
+    document.getElementById("pantalla-resultado").style.display  = "none";
+    document.getElementById("pantalla-registro").style.display   = "none";
+    const nombre = document.getElementById("nombre")?.value || "";
+    const el = document.getElementById("navbar-nombre-pcd");
+    if (el) el.textContent = nombre ? `Evaluando: ${nombre}` : "";
+}
+function mostrarPantallaResultado() {
+    document.getElementById("pantalla-dashboard").style.display  = "none";
+    document.getElementById("pantalla-inicio").style.display     = "none";
+    document.getElementById("pantalla-evaluacion").style.display = "none";
+    document.getElementById("pantalla-resultado").style.display  = "block";
+    document.getElementById("pantalla-registro").style.display   = "none";
+}
+function mostrarPantallaRegistro() {
+    document.getElementById("pantalla-dashboard").style.display  = "none";
+    document.getElementById("pantalla-inicio").style.display     = "none";
+    document.getElementById("pantalla-evaluacion").style.display = "none";
+    document.getElementById("pantalla-resultado").style.display  = "none";
+    document.getElementById("pantalla-registro").style.display   = "block";
+}
+
+    function mostrarPantallaDashboard() {
+    document.getElementById("pantalla-dashboard").style.display  = "block";
+    document.getElementById("pantalla-inicio").style.display     = "none";
+    document.getElementById("pantalla-evaluacion").style.display = "none";
+    document.getElementById("pantalla-resultado").style.display  = "none";
+    document.getElementById("pantalla-registro").style.display   = "none";
+    document.getElementById("dashboard-nombre").textContent      = PROFESIONAL_NOMBRE;
+}
  
     // =========================
     // BUSCAR PCD POR NOMBRE (en vivo, datalist)
@@ -803,5 +866,5 @@ if (camposNulos.length > 0) {
     });
  
     //mostrarPantallaRegistro();//Temp
-    mostrarPantallaInicio();
+    mostrarPantallaDashboard()
 })

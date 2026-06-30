@@ -13,26 +13,87 @@
 
     <!-- Sidebar -->
     <div id="sidebar-wrapper">
-        <div class="sidebar-heading">Sistema de apoyos</div>
-        <div class="list-group list-group-flush">
-            <a class="list-group-item list-group-item-action p-3">1. Aprendizaje y conocimiento</a>
-            <a class="list-group-item list-group-item-action p-3">2. Comunicación, lenguaje y pensamiento</a>
-            <a class="list-group-item list-group-item-action p-3">3. Vida cotidiana</a>
-            <a class="list-group-item list-group-item-action p-3">4. Participación social</a>
-            <a class="list-group-item list-group-item-action p-3">5. Movilidad</a>
-        </div>
+    <div class="sidebar-heading">Incluye<span style="color:var(--color-acento)">+</span></div>
+    <div class="list-group list-group-flush">
+        <a class="list-group-item list-group-item-action p-3" id="nav-inicio">
+            🏠 Inicio
+        </a>
+        <a class="list-group-item list-group-item-action p-3" id="nav-registro">
+            ➕ Registrar PCD
+        </a>
+        <a class="list-group-item list-group-item-action p-3" id="nav-tamizaje">
+            📋 Sistema de apoyos
+        </a>
+        <a class="list-group-item list-group-item-action p-3" id="nav-ficha">
+            👤 Ficha PCD
+        </a>
+        <a class="list-group-item list-group-item-action p-3 disabled" id="nav-ppa">
+            📝 PPA <span class="badge bg-secondary ms-2">Próximo</span>
+        </a>
+        <a class="list-group-item list-group-item-action p-3 disabled" id="nav-reportes">
+            📊 Reportes <span class="badge bg-secondary ms-2">Próximo</span>
+        </a>
     </div>
+</div>
 
     <!-- Contenido -->
     <div id="page-content-wrapper">
 
         <!-- Navbar -->
         <nav class="navbar">
-            <div class="navbar-inner">
-                <button class="btn btn-primary" id="sidebarToggle">☰ Menú</button>
-                <span id="navbar-nombre-pcd" class="navbar-pcd"></span>
+    <div class="navbar-inner">
+        <button class="btn btn-primary" id="sidebarToggle">☰ Menú</button>
+        <span id="navbar-nombre-pcd" class="navbar-pcd"></span>
+        <div class="navbar-sesion">
+            <span id="navbar-profesional"></span>
+            <button id="btn-cerrar-sesion" class="btn btn-outline-light btn-sm">Cerrar sesión</button>
+        </div>
+    </div>
+</nav>
+
+        <!-- ================================================
+     PANTALLA DASHBOARD — Hub principal
+================================================ -->
+<div id="pantalla-dashboard" class="pantalla container-fluid py-4">
+
+    <h2 style="color: var(--color-principal);">Bienvenido/a, <span id="dashboard-nombre"></span></h2>
+    <p class="text-muted">¿Qué deseas hacer hoy?</p>
+
+    <div class="row g-4 mt-2">
+
+        <div class="col-md-4">
+            <div class="card dashboard-card" id="dash-tamizaje">
+                <div class="card-body text-center">
+                    <div class="dashboard-icono">📋</div>
+                    <h5>Sistema de apoyos</h5>
+                    <p class="text-muted">Aplicar o consultar tamizaje</p>
+                </div>
             </div>
-        </nav>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card dashboard-card" id="dash-registro">
+                <div class="card-body text-center">
+                    <div class="dashboard-icono">➕</div>
+                    <h5>Registrar PCD</h5>
+                    <p class="text-muted">Ingresar nueva persona</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card dashboard-card disabled-card">
+                <div class="card-body text-center">
+                    <div class="dashboard-icono">📝</div>
+                    <h5>PPA</h5>
+                    <p class="text-muted">Próximamente</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<!-- FIN pantalla-dashboard -->
 
         <!-- ================================================
              PANTALLA 1: INICIO — datos de la persona

@@ -5,6 +5,7 @@ const pcdRoutes = require('./routes/pcd.routes')
 const tamizajeRoutes = require('./routes/tamizaje.routes')
 const profesionalRoutes = require('./routes/profesional.routes')
 const cicloRoutes       = require('./routes/ciclo.routes')
+const authRoutes        = require('./routes/auth.routes')
 
 const app = express()
 const PORT = process.env.PORT || 3000
@@ -18,6 +19,7 @@ app.use((req, _res, next) => {
 })
 
 app.use('/api/profesionales', profesionalRoutes)
+app.use('/api/auth', authRoutes)
 app.use('/api/ciclos', cicloRoutes)
 
 app.use('/api/pcd', pcdRoutes)

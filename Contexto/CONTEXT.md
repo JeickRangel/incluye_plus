@@ -157,6 +157,12 @@ Ingreso PCD → Sistema de apoyos → Estudio de caso → PPA → Sesiones → S
 - [x] nivelApoyoGeneral acepta equivalencia 0-4 (incluye APOYO GENERALIZADO)
 - [x] Formulario de registro de nueva PCD — backend completo
 - [x] Formulario de registro de nueva PCD — frontend + backend completos ✅
+- [x] Login real con JWT + bcrypt
+- [x] Endpoint POST /api/auth/login
+- [x] Middleware verificarToken protegiendo todas las rutas
+- [x] Frontend protegido — redirige a login.html sin token
+- [x] Nombre del profesional en navbar
+- [x] Cerrar sesión funcional
 
 ### Módulo 2 — PPA / Plan Personalizado de Apoyo 🔲 Siguiente
 ### Módulo 3 — Sesiones e intervención 🔲 Fase 2
@@ -178,6 +184,7 @@ Ingreso PCD → Sistema de apoyos → Estudio de caso → PPA → Sesiones → S
 | GET | `/api/health` | Verifica que el servidor está activo | ✅ |
 | GET | /api/pcd/buscar-nombre?nombre=X&entidadId=X | Busca PCDs por nombre (parcial, insensible a mayúsculas) | ✅ nuevo |
 | POST | `/api/pcd` | Crea PCD + FichaPcd + Ciclo en transacción | ✅ actualizado |
+| POST | `/api/auth/login` | Autentica profesional y devuelve JWT | ✅ |
 
 ---
 
@@ -248,6 +255,11 @@ Ingreso PCD → Sistema de apoyos → Estudio de caso → PPA → Sesiones → S
 | `backend/src/controllers/ciclo.controller.js` | Obtener o crear ciclo activo |
 | `backend/prisma/schema.prisma` | Definición completa del modelo de datos |
 | `docs/diario_tecnico_incluye_plus.md` | Diario técnico del proyecto |
+| `login.html` | Pantalla de login independiente |
+| `backend/src/controllers/auth.controller.js` | Lógica de autenticación |
+| `backend/src/routes/auth.routes.js` | Ruta POST /api/auth/login |
+| `backend/src/middleware/auth.middleware.js` | Middleware verificarToken |
+| `backend/src/seed-password.js` | Script de uso único para encriptar contraseñas |
 
 ---
 
@@ -275,30 +287,36 @@ Ingreso PCD → Sistema de apoyos → Estudio de caso → PPA → Sesiones → S
 | <datalist> en vez de dropdown custom | Más simple, autocompletado nativo del navegador |
 | `profesionalSeleccionadoNombre` declarado en scope global | Necesario para que btnGuardar y btnExportarWord puedan leerlo — variables dentro de un evento no sobreviven fuera de él |
 | nivelApoyoGeneral acepta 0-4 | La equivalencia numérica incluye APOYO GENERALIZADO (4), distinto de los puntajes de preguntas (0-3) |
+| JWT con expiración de 8h | Cubre una jornada laboral completa sin reautenticar |
+| Mismo mensaje para email y clave incorrectos | Seguridad: no revelar si el email existe |
+| Token guardado en localStorage | Simple para esta etapa — en producción evaluar httpOnly cookie |
+| login.html separado de index.html | Más limpio y refleja arquitectura real de apps |
+| Middleware aplicado en routes, no en index.js | Flexibilidad — cada ruta decide si requiere auth |
 ---
 
 ## 11. Sesión actual
 
 ## 11. Sesión actual
 
-**Fecha:** 18 de junio de 2026
+**Fecha:** 29 de junio de 2026
 
 ### Objetivo de la sesión
-Completar el formulario HTML de registro de nueva PCD y conectarlo al backend.
+Implementar autenticación real con JWT y construir el dashboard principal con navegación entre módulos.
 
 ### Lo que se hizo
-- Secciones 2 a 7 del formulario HTML completadas
-- Correcciones de UX: EPS como select (13 opciones), 7 tipos de discapacidad, categorías de apoyo como select, tipo de ayuda técnica como select, porcentaje con símbolo %
-- Función registrarNuevaPcd() implementada en scripts.js con helpers bool/val/num/float
-- Validación de campos obligatorios antes del fetch
-- POST /api/pcd probado y funcionando — Status 201 ✅
-- Console.logs de prueba eliminados
-- mostrarPantallaInicio() restaurada como pantalla de arranque
+- Login real con JWT + bcrypt implementado (backend + frontend)
+- Middleware verificarToken creado y aplicado a todas las rutas
+- login.html creado como página independiente
+- Dashboard con sidebar y cards visuales construido
+- Navegación entre pantallas funcionando desde sidebar y cards
+- Nombre del profesional visible en navbar, cerrar sesión funcional
+- Script seed-password.js para encriptar contraseña de Mónica Pineros
 
 ### Pendientes
-- Diseñar y construir menú principal (pantalla hub entre módulos)
-- Definir flujo de navegación: ¿el profesional elige acción primero o busca PCD primero?
-- Conectar módulo 2 — PPA
+- Conectar botones del dashboard (dash-tamizaje y dash-registro)
+- Buscador de PCD en el dashboard
+- Enviar token JWT en cada petición al backend desde el frontend
+- Módulo Ficha PCD (consulta/edición de caracterización)
 
 ## 12. Preguntas o dudas abiertas
 
